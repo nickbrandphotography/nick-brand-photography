@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { mainNav, site } from "@/lib/site";
 
-/** Site header with sticky nav and a mobile drawer. */
 export default function Header() {
   const [open, setOpen] = useState(false);
 
@@ -20,7 +19,6 @@ export default function Header() {
           <span className="text-gold"> Photography</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-7 lg:flex">
           {mainNav.map((item) => (
             <Link
@@ -39,7 +37,6 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Mobile toggle */}
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -65,7 +62,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile drawer */}
       {open ? (
         <nav className="border-t border-border bg-ink-2 lg:hidden">
           <div className="mx-auto flex w-full max-w-6xl flex-col px-5 py-3 sm:px-8">

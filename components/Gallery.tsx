@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { SiteImage } from "@/lib/images";
 
-/** Responsive portfolio image grid using optimised local images. */
 export default function Gallery({
   images,
   columns = 3,

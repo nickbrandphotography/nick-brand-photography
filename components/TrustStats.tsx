@@ -7,7 +7,6 @@ const stats = [
   { value: site.stats.insured, label: "Public Liability Insured" },
 ];
 
-/** Compact trust-signal strip. */
 export default function TrustStats({
   bordered = true,
 }: {

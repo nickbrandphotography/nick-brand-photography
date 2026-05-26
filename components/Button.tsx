@@ -4,17 +4,11 @@ import type { ReactNode } from "react";
 type Variant = "gold" | "outline" | "ghost";
 
 const styles: Record<Variant, string> = {
-  gold:
-    "bg-gold text-ink hover:bg-gold-soft font-semibold",
-  outline:
-    "border border-border-strong text-cream hover:border-gold hover:text-gold",
+  gold: "bg-gold text-ink hover:bg-gold-soft font-semibold",
+  outline: "border border-border-strong text-cream hover:border-gold hover:text-gold",
   ghost: "text-cream hover:text-gold",
 };
 
-/**
- * Primary call-to-action link. Renders an external <a> for booking/tel links,
- * otherwise a Next.js <Link>.
- */
 export default function Button({
   href,
   children,

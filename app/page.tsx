@@ -11,7 +11,6 @@ import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
-import JsonLd from "@/components/JsonLd";
 import { faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -53,8 +52,6 @@ const homeFaqs = [
 export default function HomePage() {
   return (
     <>
-      <JsonLd data={faqSchema(homeFaqs)} />
-
       {/* Hero */}
       <section className="border-b border-border bg-ink-2">
         <Container className="grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">

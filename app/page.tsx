@@ -11,7 +11,6 @@ import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
-import { faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: `${site.tagline} | ${site.name}`,

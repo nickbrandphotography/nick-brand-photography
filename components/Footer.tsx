@@ -164,4 +164,11 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col gap-2 border-t border-border pt-6 text-xs text-faint sm:flex-row sm:justify-between">
           <p>
-            &copy; {year} {site.nam
+            &copy; {year} {site.name}. All rights reserved.
+          </p>
+          <p>Corporate &amp; personal branding photography — Sydney, Australia.</p>
+        </div>
+      </Container>
+    </footer>
+  );
+}

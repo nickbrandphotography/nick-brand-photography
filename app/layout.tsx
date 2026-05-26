@@ -3,9 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import JsonLd from "@/components/JsonLd";
 import { site } from "@/lib/site";
-import { localBusinessSchema, personSchema, webSiteSchema } from "@/lib/schema";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -60,9 +58,6 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-ink">
-        <JsonLd
-          data={[localBusinessSchema(), personSchema(), webSiteSchema()]}
-        />
         <Header />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />

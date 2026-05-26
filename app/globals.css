@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Nick Brand Photography — charcoal + gold premium theme
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-ink: #131312;
+  --color-ink-2: #1a1a18;
+  --color-surface: #1d1d1b;
+  --color-surface-2: #242422;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  --color-gold: #c9a24a;
+  --color-gold-soft: #d8b86a;
+  --color-gold-dim: #9a7c38;
+
+  --color-cream: #f4f2ec;
+  --color-muted: #9c9b94;
+  --color-faint: #6f6e68;
+
+  --font-display: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Heading display font helper */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Small uppercase eyebrow label */
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+/* Thin gold divider rule */
+.rule-gold {
+  height: 1px;
+  width: 3rem;
+  background: var(--color-gold);
+}
+
+/* Reusable section vertical padding */
+.section {
+  padding-top: 5.5rem;
+  padding-bottom: 5.5rem;
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+}
+
+/* Accessible focus ring */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

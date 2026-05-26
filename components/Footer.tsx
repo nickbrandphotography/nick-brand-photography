@@ -169,6 +169,4 @@ export default function Footer() {
           <p>Corporate &amp; personal branding photography — Sydney, Australia.</p>
         </div>
       </Container>
-    </footer>
-  );
-}
+    </

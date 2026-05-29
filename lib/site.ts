@@ -73,6 +73,7 @@ export const site = {
 /** Primary navigation — drives the header and footer. */
 export const mainNav: { label: string; href: string }[] = [
   { label: "Corporate Headshots", href: "/corporate-headshots-sydney" },
+  { label: "LinkedIn Headshots", href: "/linkedin-headshots-sydney" },
   { label: "Personal Branding", href: "/personal-branding-sydney" },
   { label: "Team Headshots", href: "/team-headshots-sydney" },
   { label: "Actor Headshots", href: "/actor-headshots-sydney" },

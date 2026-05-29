@@ -15,11 +15,25 @@ const crumbs = [
   { name: "Blog", path: "/blog" },
 ];
 
+const BLOG_TITLE = `Photography Tips & Guides | ${site.name}`;
+const BLOG_DESCRIPTION =
+  "Practical guides on corporate headshots, LinkedIn photos, executive portraits and personal branding photography in Sydney — from Nick Brand Photography.";
+
 export const metadata: Metadata = {
-  title: `Photography Tips & Guides | ${site.name}`,
-  description:
-    "Practical guides on corporate headshots, LinkedIn photos, executive portraits and personal branding photography in Sydney — from Nick Brand Photography.",
+  title: BLOG_TITLE,
+  description: BLOG_DESCRIPTION,
   alternates: { canonical: absoluteUrl("/blog") },
+  openGraph: {
+    title: BLOG_TITLE,
+    description: BLOG_DESCRIPTION,
+    url: absoluteUrl("/blog"),
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: BLOG_TITLE,
+    description: BLOG_DESCRIPTION,
+  },
 };
 
 const MONTHS = [

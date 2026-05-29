@@ -16,6 +16,11 @@
   --color-gold-soft: #d8b86a;
   --color-gold-dim: #9a7c38;
 
+  /* Warm terracotta — used for form validation errors. Picked to read
+     clearly against the dark surface without clashing with gold. */
+  --color-danger: #d8674c;
+  --color-danger-soft: rgba(216, 103, 76, 0.12);
+
   --color-cream: #f4f2ec;
   --color-muted: #9c9b94;
   --color-faint: #6f6e68;

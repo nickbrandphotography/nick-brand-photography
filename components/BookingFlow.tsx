@@ -71,9 +71,24 @@ export default function BookingFlow() {
   const [postcode, setPostcode] = useState("");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [touched, setTouched] = useState(false);
+  // Fields the user has blurred at least once. Combined with `touched`
+  // (set on submit) so errors appear as soon as a field has been visited,
+  // not only after the whole form is attempted.
+  const [blurred, setBlurred] = useState<Record<keyof FormState, boolean>>({
+    name: false,
+    email: false,
+    phone: false,
+    company: false,
+    note: false,
+  });
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string>("");
   const [reference, setReference] = useState<string>("");
   const [manageToken, setManageToken] = useState<string>("");
+
+  const markBlurred = useCallback((name: keyof FormState) => {
+    setBlurred((prev) => (prev[name] ? prev : { ...prev, [name]: true }));
+  }, []);
 
   // Cache of fetched slots keyed by "YYYY-MM-DD#durationMin".
   const [slotsCache, setSlotsCache] = useState<Record<string, Slot[]>>({});
@@ -132,11 +147,20 @@ export default function BookingFlow() {
     setPostcode("");
     setForm(EMPTY_FORM);
     setTouched(false);
+    setBlurred({
+      name: false,
+      email: false,
+      phone: false,
+      company: false,
+      note: false,
+    });
+    setSubmitError("");
     setReference("");
   }
 
   async function submitBooking() {
     setTouched(true);
+    setSubmitError("");
     const validInstant =
       form.name.trim() && EMAIL_RE.test(form.email) && form.phone.trim();
     const validEnquiry =
@@ -171,11 +195,22 @@ export default function BookingFlow() {
           setReference(json.reference);
           setManageToken(json.manageToken);
         } else {
-          // Server error — keep the form open so the client can try again.
+          // Server error — surface the message so the user knows it failed.
+          let msg = "We couldn't confirm your booking. Please try again.";
+          try {
+            const json = await res.json();
+            if (json && typeof json.error === "string") msg = json.error;
+          } catch {
+            /* response wasn't JSON — keep generic message */
+          }
+          setSubmitError(msg);
           setSubmitting(false);
           return;
         }
       } catch {
+        setSubmitError(
+          "We couldn't reach the booking server. Check your connection and try again.",
+        );
         setSubmitting(false);
         return;
       }
@@ -247,8 +282,11 @@ export default function BookingFlow() {
             travelFee={travelFee}
             form={form}
             touched={touched}
+            blurred={blurred}
             submitting={submitting}
+            submitError={submitError}
             onChange={(patch) => setForm({ ...form, ...patch })}
+            onBlur={markBlurred}
             onBack={() => setStep("datetime")}
             onSubmit={submitBooking}
           />
@@ -259,8 +297,11 @@ export default function BookingFlow() {
             service={service}
             form={form}
             touched={touched}
+            blurred={blurred}
             submitting={submitting}
+            submitError={submitError}
             onChange={(patch) => setForm({ ...form, ...patch })}
+            onBlur={markBlurred}
             onBack={restart}
             onSubmit={submitBooking}
           />
@@ -742,8 +783,11 @@ function DetailsStep({
   travelFee,
   form,
   touched,
+  blurred,
   submitting,
+  submitError,
   onChange,
+  onBlur,
   onBack,
   onSubmit,
 }: {
@@ -756,8 +800,11 @@ function DetailsStep({
   travelFee: number;
   form: FormState;
   touched: boolean;
+  blurred: Record<keyof FormState, boolean>;
   submitting: boolean;
+  submitError: string;
   onChange: (patch: Partial<FormState>) => void;
+  onBlur: (name: keyof FormState) => void;
   onBack: () => void;
   onSubmit: () => void;
 }) {
@@ -768,6 +815,10 @@ function DetailsStep({
   const locationLabel = onLocation
     ? `On-location · ${postcode}`
     : "Lane Cove studio";
+
+  // A field shows its error once it's been blurred OR the user has tried
+  // to submit the whole form at least once.
+  const show = (name: keyof FormState) => touched || blurred[name];
 
   return (
     <div>
@@ -796,16 +847,20 @@ function DetailsStep({
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
               label="Full name"
+              required
               value={form.name}
               onChange={(v) => onChange({ name: v })}
-              error={touched && !form.name.trim() ? "Required" : ""}
+              onBlur={() => onBlur("name")}
+              error={show("name") && !form.name.trim() ? "Required" : ""}
               autoComplete="name"
             />
             <Field
               label="Phone"
+              required
               value={form.phone}
               onChange={(v) => onChange({ phone: v })}
-              error={touched && !form.phone.trim() ? "Required" : ""}
+              onBlur={() => onBlur("phone")}
+              error={show("phone") && !form.phone.trim() ? "Required" : ""}
               autoComplete="tel"
               type="tel"
             />
@@ -813,11 +868,15 @@ function DetailsStep({
           <div className="mt-4">
             <Field
               label="Email"
+              required
               value={form.email}
               onChange={(v) => onChange({ email: v })}
+              onBlur={() => onBlur("email")}
               error={
-                touched && !EMAIL_RE.test(form.email)
-                  ? "Enter a valid email"
+                show("email") && !EMAIL_RE.test(form.email)
+                  ? form.email.trim()
+                    ? "Enter a valid email"
+                    : "Required"
                   : ""
               }
               autoComplete="email"
@@ -829,6 +888,7 @@ function DetailsStep({
               label="Company (optional)"
               value={form.company}
               onChange={(v) => onChange({ company: v })}
+              onBlur={() => onBlur("company")}
               autoComplete="organization"
             />
           </div>
@@ -841,9 +901,22 @@ function DetailsStep({
               }
               value={form.note}
               onChange={(v) => onChange({ note: v })}
+              onBlur={() => onBlur("note")}
               textarea
             />
           </div>
+
+          {submitError && (
+            <div
+              role="alert"
+              className="mt-5 border border-danger bg-danger-soft px-4 py-3 text-sm leading-relaxed text-cream"
+            >
+              <strong className="font-semibold text-danger">
+                Something went wrong.
+              </strong>{" "}
+              {submitError}
+            </div>
+          )}
 
           <button
             type="submit"
@@ -903,19 +976,27 @@ function EnquiryStep({
   service,
   form,
   touched,
+  blurred,
   submitting,
+  submitError,
   onChange,
+  onBlur,
   onBack,
   onSubmit,
 }: {
   service: SessionType;
   form: FormState;
   touched: boolean;
+  blurred: Record<keyof FormState, boolean>;
   submitting: boolean;
+  submitError: string;
   onChange: (patch: Partial<FormState>) => void;
+  onBlur: (name: keyof FormState) => void;
   onBack: () => void;
   onSubmit: () => void;
 }) {
+  const show = (name: keyof FormState) => touched || blurred[name];
+
   return (
     <div>
       <button
@@ -945,25 +1026,34 @@ function EnquiryStep({
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
             label="Full name"
+            required
             value={form.name}
             onChange={(v) => onChange({ name: v })}
-            error={touched && !form.name.trim() ? "Required" : ""}
+            onBlur={() => onBlur("name")}
+            error={show("name") && !form.name.trim() ? "Required" : ""}
             autoComplete="name"
           />
           <Field
             label="Company"
             value={form.company}
             onChange={(v) => onChange({ company: v })}
+            onBlur={() => onBlur("company")}
             autoComplete="organization"
           />
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field
             label="Email"
+            required
             value={form.email}
             onChange={(v) => onChange({ email: v })}
+            onBlur={() => onBlur("email")}
             error={
-              touched && !EMAIL_RE.test(form.email) ? "Enter a valid email" : ""
+              show("email") && !EMAIL_RE.test(form.email)
+                ? form.email.trim()
+                  ? "Enter a valid email"
+                  : "Required"
+                : ""
             }
             autoComplete="email"
             type="email"
@@ -972,6 +1062,7 @@ function EnquiryStep({
             label="Phone (optional)"
             value={form.phone}
             onChange={(v) => onChange({ phone: v })}
+            onBlur={() => onBlur("phone")}
             autoComplete="tel"
             type="tel"
           />
@@ -979,12 +1070,26 @@ function EnquiryStep({
         <div className="mt-4">
           <Field
             label="Project details — team size, dates, location"
+            required
             value={form.note}
             onChange={(v) => onChange({ note: v })}
-            error={touched && !form.note.trim() ? "Required" : ""}
+            onBlur={() => onBlur("note")}
+            error={show("note") && !form.note.trim() ? "Required" : ""}
             textarea
           />
         </div>
+
+        {submitError && (
+          <div
+            role="alert"
+            className="mt-5 border border-danger bg-danger-soft px-4 py-3 text-sm leading-relaxed text-cream"
+          >
+            <strong className="font-semibold text-danger">
+              Something went wrong.
+            </strong>{" "}
+            {submitError}
+          </div>
+        )}
 
         <button
           type="submit"
@@ -1129,32 +1234,48 @@ function Field({
   label,
   value,
   onChange,
+  onBlur,
   error = "",
   type = "text",
   textarea = false,
   autoComplete,
+  required = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   error?: string;
   type?: string;
   textarea?: boolean;
   autoComplete?: string;
+  required?: boolean;
 }) {
   const base =
-    "mt-1.5 w-full border bg-ink-2 px-3.5 py-2.5 text-sm text-cream placeholder:text-faint transition-colors focus:border-gold focus:outline-none";
-  const borderColor = error ? "border-gold-dim" : "border-border";
+    "mt-1.5 w-full border bg-ink-2 px-3.5 py-2.5 text-sm text-cream placeholder:text-faint transition-colors focus:outline-none";
+  // Erroring field gets a brighter terracotta border + ring so it's
+  // unmistakable on a dark surface; a clean field gets the normal focus-gold.
+  const borderColor = error
+    ? "border-danger ring-1 ring-danger/40 focus:border-danger"
+    : "border-border focus:border-gold";
   return (
     <label className="block">
-      <span className="text-[0.74rem] uppercase tracking-[0.12em] text-faint">
+      <span className="flex items-center gap-1 text-[0.74rem] uppercase tracking-[0.12em] text-faint">
         {label}
+        {required && (
+          <span aria-hidden className="text-danger">
+            *
+          </span>
+        )}
       </span>
       {textarea ? (
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           rows={4}
+          aria-invalid={error ? true : undefined}
+          aria-required={required || undefined}
           className={`${base} ${borderColor} resize-none`}
         />
       ) : (
@@ -1163,11 +1284,16 @@ function Field({
           value={value}
           autoComplete={autoComplete}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          aria-invalid={error ? true : undefined}
+          aria-required={required || undefined}
           className={`${base} ${borderColor}`}
         />
       )}
       {error && (
-        <span className="mt-1 block text-[0.72rem] text-gold">{error}</span>
+        <span className="mt-1 block text-[0.74rem] font-medium text-danger">
+          {error}
+        </span>
       )}
     </label>
   );

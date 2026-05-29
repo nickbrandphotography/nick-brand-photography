@@ -86,10 +86,17 @@ export function getImages(
   for (let i = 1; i <= n; i++) {
     const num = String(i).padStart(2, "0");
     const base = `/images/${silo}/${meta.slug}-${num}`;
+    // Alt text: prefer a descriptive override (e.g. "Corporate headshots in
+    // Lane Cove") because it gives search engines and screen readers real
+    // context. We intentionally do NOT append "— image N" — that's noise,
+    // not signal. When several images in a gallery share alt text it is
+    // still better than indexed placeholders.
     out.push({
       src: `${base}.webp`,
       jpg: `${base}.jpg`,
-      alt: altOverride ? `${altOverride} — image ${i}` : meta.alt,
+      alt: altOverride
+        ? `${altOverride} by Nick Brand Photography`
+        : meta.alt,
     });
   }
   return out;

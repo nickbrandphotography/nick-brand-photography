@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { site, absoluteUrl } from "@/lib/site";
 import { getPost, postSlugs } from "@/lib/posts";
 import { getService } from "@/lib/services";
-import { getImage } from "@/lib/images";
+import { getImage, nickPortrait } from "@/lib/images";
 import { Container, Eyebrow } from "@/components/Section";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import FAQ from "@/components/FAQ";
@@ -86,7 +86,11 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.date,
     image: absoluteUrl(hero.src),
     articleSection: post.category,
-    author: { "@type": "Person", name: site.founder },
+    author: {
+      "@type": "Person",
+      name: site.founder,
+      url: absoluteUrl("/about"),
+    },
     publisher: {
       "@type": "Organization",
       name: site.name,
@@ -118,9 +122,29 @@ export default async function BlogPostPage({ params }: Props) {
               <h1 className="font-display mt-6 text-[2.3rem] leading-[1.12] text-cream sm:text-4xl lg:text-[3rem]">
                 {post.title}
               </h1>
-              <p className="mt-5 text-sm text-faint">
-                {formatDate(post.date)} · {post.readingTime}
-              </p>
+              <div className="mt-6 flex items-center justify-center gap-3">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full border border-border">
+                  <Image
+                    src={nickPortrait.src}
+                    alt={nickPortrait.alt}
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-left text-sm leading-tight">
+                  <Link
+                    href="/about"
+                    rel="author"
+                    className="text-cream transition-colors hover:text-gold"
+                  >
+                    By {site.founder}
+                  </Link>
+                  <p className="text-xs text-faint">
+                    {formatDate(post.date)} · {post.readingTime}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="relative mt-10 aspect-[16/9] overflow-hidden border border-border">
               <Image

@@ -23,6 +23,42 @@ export type Location = {
 
 export const locations: Location[] = [
   {
+    slug: "lane-cove",
+    suburb: "Lane Cove",
+    metaTitle:
+      "Corporate Headshots & Personal Branding Lane Cove | Nick Brand Photography",
+    metaDescription:
+      "Corporate headshots, personal branding and executive portraits photographed at the Nick Brand Photography studio in Lane Cove. Quick sessions for North Shore professionals.",
+    h1: "Headshots & Personal Branding in Lane Cove",
+    intro: [
+      "Lane Cove is the home of Nick Brand Photography — the studio is on Centennial Avenue, around the corner from the Lane Cove village centre. For professionals and small businesses based in Lane Cove or the surrounding Lower North Shore, it is the closest dedicated headshot and branding studio in the area.",
+      "Sessions at the studio cover corporate headshots, LinkedIn portraits, personal branding libraries and executive portraits, with consistent studio lighting and a choice of backgrounds. On-site work for Lane Cove businesses is straightforward to arrange — the mobile studio sets up directly in your office.",
+    ],
+    localSignals: [
+      "Professional services and small businesses around Lane Cove village",
+      "Consultants, advisors and founders based on the Lower North Shore",
+      "Local medical, legal and accounting practices",
+      "Businesses along Longueville and Centennial Avenue",
+    ],
+    logistics:
+      "The studio is at 84 Centennial Avenue, Lane Cove — five minutes from the village centre with parking on site. On-site headshot days bring the mobile studio to Lane Cove offices.",
+    faqs: [
+      {
+        q: "Where is the studio in Lane Cove?",
+        a: "The studio is at 84 Centennial Avenue, a short walk from the Lane Cove village centre, with on-site parking. Sessions are private and run by Nick directly.",
+      },
+      {
+        q: "Do you photograph Lane Cove businesses on-site as well?",
+        a: "Yes. On-site headshot days are easy to arrange for Lane Cove offices — the mobile studio sets up in your space so the team is photographed without leaving the building.",
+      },
+      {
+        q: "What does a Lane Cove headshot session cost?",
+        a: "Individual headshots start at $395 and team rates are $285 per person for groups of five or more. Personal branding sessions start at $895.",
+      },
+    ],
+  },
+
+  {
     slug: "sydney-cbd",
     suburb: "Sydney CBD",
     metaTitle:

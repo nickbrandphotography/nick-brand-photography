@@ -121,8 +121,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ reference, manageToken: eventId });
     } catch (err) {
       console.error("[bookings] Calendar API error:", err);
+
+      // Forward the real Google error to the front-end so the failure mode is
+      // visible (e.g. "writer access required" → the service account hasn't
+      // been granted edit permission on the calendar). The booking UI shows
+      // this string verbatim in its error banner.
+      const raw =
+        err instanceof Error ? err.message : "Unknown calendar error";
+
+      let friendly = "Could not create calendar event. Please try again.";
+      const lower = raw.toLowerCase();
+      if (
+        lower.includes("writer access") ||
+        lower.includes("insufficient") ||
+        lower.includes("forbidden") ||
+        lower.includes("permission")
+      ) {
+        friendly =
+          "The booking calendar isn't accepting events from this service account yet. In Google Calendar, share the calendar with the service account email and set its permission to \"Make changes to events\".";
+      } else if (lower.includes("not found")) {
+        friendly =
+          "Google Calendar couldn't find the configured calendar. Check that GOOGLE_CALENDAR_ID in Vercel matches the calendar ID exactly.";
+      } else if (lower.includes("invalid_grant") || lower.includes("jwt")) {
+        friendly =
+          "The Google service account credentials are invalid. Re-check GOOGLE_PRIVATE_KEY in Vercel — line breaks often get mangled on paste.";
+      }
+
       return NextResponse.json(
-        { error: "Could not create calendar event. Please try again." },
+        { error: friendly, detail: raw },
         { status: 500 },
       );
     }

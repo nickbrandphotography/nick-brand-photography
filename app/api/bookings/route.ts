@@ -142,9 +142,15 @@ export async function POST(req: NextRequest) {
       } else if (lower.includes("not found")) {
         friendly =
           "Google Calendar couldn't find the configured calendar. Check that GOOGLE_CALENDAR_ID in Vercel matches the calendar ID exactly.";
-      } else if (lower.includes("invalid_grant") || lower.includes("jwt")) {
+      } else if (
+        lower.includes("invalid_grant") ||
+        lower.includes("jwt") ||
+        lower.includes("decoder") ||
+        lower.includes("pem") ||
+        lower.includes("private key")
+      ) {
         friendly =
-          "The Google service account credentials are invalid. Re-check GOOGLE_PRIVATE_KEY in Vercel — line breaks often get mangled on paste.";
+          "Google rejected the service account private key. The GOOGLE_PRIVATE_KEY value in Vercel is malformed — re-paste it from the service account JSON file, including the BEGIN/END markers, and redeploy.";
       }
 
       return NextResponse.json(

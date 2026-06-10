@@ -20,6 +20,37 @@ import { OPENING_HOURS, dateKey, type Slot } from "./booking";
 /*  Auth                                                                       */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Normalise the private key as stored in env (Vercel, .env.local, etc.) into
+ * a real PEM string that OpenSSL will accept. Handles every paste variant
+ * that has burnt me at least once:
+ *   - Wrapping double quotes from copy-pasting the JSON string verbatim
+ *   - Literal "\n" sequences from .env.local format
+ *   - Windows \r\n line endings
+ *   - Leading/trailing whitespace
+ * If the result doesn't look like a PEM key, throw a clear error rather than
+ * letting OpenSSL fail with "DECODER routines::unsupported".
+ */
+function normalisePrivateKey(raw: string): string {
+  let key = raw.trim();
+  // Strip surrounding quotes if the value was pasted with them.
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
+  }
+  // Convert literal backslash-n to real newlines, then strip carriage returns.
+  key = key.replace(/\\n/g, "\n").replace(/\r/g, "");
+
+  if (!key.includes("BEGIN PRIVATE KEY") || !key.includes("END PRIVATE KEY")) {
+    throw new Error(
+      "GOOGLE_PRIVATE_KEY in env doesn't look like a PEM private key — missing BEGIN/END markers. Re-paste the private_key value from your service account JSON file.",
+    );
+  }
+  return key;
+}
+
 function getAuth() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawKey = process.env.GOOGLE_PRIVATE_KEY;
@@ -30,8 +61,7 @@ function getAuth() {
     );
   }
 
-  // .env.local stores \n as a literal backslash-n; convert to real newlines.
-  const privateKey = rawKey.replace(/\\n/g, "\n");
+  const privateKey = normalisePrivateKey(rawKey);
 
   return new google.auth.GoogleAuth({
     credentials: { client_email: email, private_key: privateKey },

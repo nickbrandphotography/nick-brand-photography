@@ -76,6 +76,68 @@ function getCalendarId(): string {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Sydney timezone handling                                                   */
+/* -------------------------------------------------------------------------- */
+/*
+ * Vercel serverless functions run in UTC, so naive `setHours()` calls produce
+ * times 10–11 hours off Sydney wall-clock time. All bookings are physically in
+ * Sydney, so every wall-clock time in this module is interpreted in
+ * Australia/Sydney explicitly, regardless of server timezone.
+ */
+
+const SYDNEY_TZ = "Australia/Sydney";
+
+/** Milliseconds Sydney is ahead of UTC at a given instant (handles DST). */
+function sydneyOffsetMs(at: Date): number {
+  const dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone: SYDNEY_TZ,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const p = Object.fromEntries(
+    dtf.formatToParts(at).map((x) => [x.type, x.value]),
+  );
+  const asUTC = Date.UTC(
+    Number(p.year),
+    Number(p.month) - 1,
+    Number(p.day),
+    p.hour === "24" ? 0 : Number(p.hour),
+    Number(p.minute),
+    Number(p.second),
+  );
+  return asUTC - at.getTime();
+}
+
+/** The UTC instant corresponding to a Sydney wall-clock time. */
+function sydneyInstant(
+  y: number,
+  mo: number, // 1-based month
+  d: number,
+  h = 0,
+  mi = 0,
+  s = 0,
+  ms = 0,
+): Date {
+  const wall = Date.UTC(y, mo - 1, d, h, mi, s, ms);
+  // Two iterations converge even across DST transitions.
+  let utc = wall;
+  for (let i = 0; i < 2; i++) {
+    utc = wall - sydneyOffsetMs(new Date(utc));
+  }
+  return new Date(utc);
+}
+
+/** Extracts the calendar-date components a `Date` was constructed with. */
+function dateParts(date: Date): [number, number, number] {
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Busy-block fetching                                                        */
 /* -------------------------------------------------------------------------- */
 
@@ -89,12 +151,10 @@ export async function getBusyBlocks(date: Date): Promise<BusyBlock[]> {
   const auth = getAuth();
   const calendar = google.calendar({ version: "v3", auth });
 
-  // Build a window from midnight to midnight (Sydney local → UTC offset handled
-  // by using full ISO strings with the local date boundaries).
-  const dayStart = new Date(date);
-  dayStart.setHours(0, 0, 0, 0);
-  const dayEnd = new Date(date);
-  dayEnd.setHours(23, 59, 59, 999);
+  // Midnight-to-midnight window in Sydney time, independent of server TZ.
+  const [y, mo, d] = dateParts(date);
+  const dayStart = sydneyInstant(y, mo, d, 0, 0, 0, 0);
+  const dayEnd = sydneyInstant(y, mo, d, 23, 59, 59, 999);
 
   const res = await calendar.freebusy.query({
     requestBody: {
@@ -136,15 +196,14 @@ export async function getRealDaySlots(
   const step = durationMin >= 90 ? 60 : 30;
   const busy = await getBusyBlocks(date);
 
+  const [y, mo, d] = dateParts(date);
   const slots: Slot[] = [];
   for (let m = open * 60; m + durationMin <= close * 60; m += step) {
     const hh = Math.floor(m / 60);
     const mm = m % 60;
 
-    const slotStart = new Date(date);
-    slotStart.setHours(hh, mm, 0, 0);
-    const slotEnd = new Date(slotStart);
-    slotEnd.setMinutes(slotEnd.getMinutes() + durationMin);
+    const slotStart = sydneyInstant(y, mo, d, hh, mm);
+    const slotEnd = new Date(slotStart.getTime() + durationMin * 60_000);
 
     // Slot is unavailable if it overlaps any busy block.
     const available = !busy.some(
@@ -187,10 +246,14 @@ export async function createBookingEvent(
   const auth = getAuth();
   const calendar = google.calendar({ version: "v3", auth });
 
-  const start = new Date(data.date);
-  start.setHours(data.hour, data.minute, 0, 0);
-  const end = new Date(start);
-  end.setMinutes(end.getMinutes() + data.durationMin);
+  // Send Sydney wall-clock times with an explicit timeZone so the event
+  // is correct no matter what timezone the server runs in.
+  const [y, mo, d] = dateParts(data.date);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dateStr = `${y}-${pad(mo)}-${pad(d)}`;
+  const endTotalMin = data.hour * 60 + data.minute + data.durationMin;
+  const startDateTime = `${dateStr}T${pad(data.hour)}:${pad(data.minute)}:00`;
+  const endDateTime = `${dateStr}T${pad(Math.floor(endTotalMin / 60))}:${pad(endTotalMin % 60)}:00`;
 
   const description = [
     `Reference: ${data.reference}`,
@@ -212,8 +275,8 @@ export async function createBookingEvent(
     requestBody: {
       summary: `📷 ${data.sessionName} — ${data.customerName}`,
       description,
-      start: { dateTime: start.toISOString() },
-      end: { dateTime: end.toISOString() },
+      start: { dateTime: startDateTime, timeZone: SYDNEY_TZ },
+      end: { dateTime: endDateTime, timeZone: SYDNEY_TZ },
       location: data.location,
       // Store booking reference in extended properties for easy lookup.
       extendedProperties: {

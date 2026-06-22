@@ -14,11 +14,26 @@ const crumbs = [
   { name: "Book a Session", path: "/book" },
 ];
 
+const bookTitle = `Book a Photography Session in Sydney | ${site.name}`;
+const bookDescription =
+  "Book your corporate headshot, personal branding or team photography session with Nick Brand Photography. Check live availability and reserve your shoot online in under a minute.";
+
 export const metadata: Metadata = {
-  title: `Book a Photography Session in Sydney | ${site.name}`,
-  description:
-    "Book your corporate headshot, personal branding or team photography session with Nick Brand Photography. Check live availability and reserve your shoot online in under a minute.",
+  title: bookTitle,
+  description: bookDescription,
   alternates: { canonical: absoluteUrl("/book") },
+  openGraph: {
+    title: bookTitle,
+    description: bookDescription,
+    url: absoluteUrl("/book"),
+    type: "website",
+    images: [
+      {
+        url: "/images/corporate-headshots/corporate-headshot-sydney-02.jpg",
+        alt: "Book a Sydney photography session with Nick Brand Photography",
+      },
+    ],
+  },
 };
 
 const steps = [

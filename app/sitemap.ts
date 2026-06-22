@@ -8,8 +8,18 @@ import { locations } from "@/lib/locations";
  * XML sitemap covering every indexable route — home, service silos, blog
  * index and posts, suburb pages and conversion pages.
  */
+/**
+ * Date the site's core (non-blog) content was last meaningfully updated.
+ * Using a stable real date — rather than `new Date()` at build time — keeps
+ * lastmod honest: it no longer changes on every deploy or reads as identical
+ * build timestamps, which search engines learn to ignore.
+ * Bump this when you make substantive content changes to service/location/
+ * static pages. Blog posts carry their own publish dates automatically.
+ */
+const CONTENT_UPDATED = new Date("2026-06-22");
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const now = CONTENT_UPDATED;
 
   const home: MetadataRoute.Sitemap = [
     {

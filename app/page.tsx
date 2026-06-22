@@ -11,6 +11,13 @@ import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
+import JsonLd from "@/components/JsonLd";
+import {
+  localBusinessSchema,
+  personSchema,
+  webSiteSchema,
+  faqSchema,
+} from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: `${site.tagline} | ${site.name}`,
@@ -51,6 +58,18 @@ const homeFaqs = [
 export default function HomePage() {
   return (
     <>
+      {/* Structured data — the LocalBusiness (#business) entity referenced by
+          every service page's provider, plus Nick (#nick), the WebSite entity,
+          and the homepage FAQ. */}
+      <JsonLd
+        data={[
+          localBusinessSchema(),
+          personSchema(),
+          webSiteSchema(),
+          faqSchema(homeFaqs),
+        ]}
+      />
+
       {/* Hero */}
       <section className="border-b border-border bg-ink-2">
         <Container className="grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">

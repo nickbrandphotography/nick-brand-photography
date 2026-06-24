@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Location } from "@/lib/locations";
 import { getImage, getImages } from "@/lib/images";
 import { site, absoluteUrl } from "@/lib/site";
-import { faqSchema, breadcrumbSchema } from "@/lib/schema";
+import { faqSchema, breadcrumbSchema, imageObjectSchema } from "@/lib/schema";
 import { Container, Eyebrow, SectionHeading } from "./Section";
 import Button from "./Button";
 import Breadcrumbs from "./Breadcrumbs";
@@ -32,7 +32,11 @@ export default function LocationPageTemplate({
   return (
     <>
       <JsonLd
-        data={[faqSchema(location.faqs), breadcrumbSchema(crumbs)]}
+        data={[
+          faqSchema(location.faqs),
+          breadcrumbSchema(crumbs),
+          imageObjectSchema(hero.src, hero.alt),
+        ]}
       />
 
       <Breadcrumbs crumbs={crumbs} />
@@ -172,6 +176,12 @@ export function locationMetadata(location: Location) {
           alt: location.h1,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: location.metaTitle,
+      description: location.metaDescription,
+      images: [getImage("corporate-headshots", 9).jpg],
     },
   };
 }

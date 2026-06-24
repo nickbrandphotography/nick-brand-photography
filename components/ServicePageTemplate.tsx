@@ -8,6 +8,7 @@ import {
   serviceSchema,
   faqSchema,
   breadcrumbSchema,
+  imageObjectSchema,
 } from "@/lib/schema";
 import { Container, Eyebrow, SectionHeading } from "./Section";
 import Button from "./Button";
@@ -39,6 +40,7 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
           serviceSchema(service),
           faqSchema(service.faqs),
           breadcrumbSchema(crumbs),
+          imageObjectSchema(hero.src, hero.alt),
         ]}
       />
 
@@ -240,6 +242,12 @@ export function serviceMetadata(slug: string) {
       url: absoluteUrl(`/${slug}`),
       type: "website",
       images: [{ url: ogImage, alt: service.h1 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: service.metaTitle,
+      description: service.metaDescription,
+      images: [ogImage],
     },
   };
 }

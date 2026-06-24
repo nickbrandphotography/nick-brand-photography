@@ -13,11 +13,34 @@ const crumbs = [
   { name: "Contact", path: "/contact" },
 ];
 
+const contactTitle = `Contact Nick Brand Photography | Sydney Photographer`;
+const contactDescription =
+  "Get in touch with Nick Brand Photography. Studio at 84 Centennial Avenue, Lane Cove NSW. Call 0403 835 467, email info@nickbrandphotography.com, or book a session online.";
+
 export const metadata: Metadata = {
-  title: `Contact Nick Brand Photography | Sydney Photographer`,
-  description:
-    "Get in touch with Nick Brand Photography. Studio at 84 Centennial Avenue, Lane Cove NSW. Call 0403 835 467, email info@nickbrandphotography.com, or book a session online.",
+  title: contactTitle,
+  description: contactDescription,
   alternates: { canonical: absoluteUrl("/contact") },
+  openGraph: {
+    title: contactTitle,
+    description: contactDescription,
+    url: absoluteUrl("/contact"),
+    type: "website",
+    images: [
+      {
+        url: "/images/og/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact Nick Brand Photography — Sydney corporate headshot photographer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: contactTitle,
+    description: contactDescription,
+    images: ["/images/og/og-default.jpg"],
+  },
 };
 
 const fullAddress = `${site.address.street}, ${site.address.suburb} ${site.address.state} ${site.address.postcode}`;

@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.metaDescription,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     image: absoluteUrl(hero.src),
     articleSection: post.category,
     author: {

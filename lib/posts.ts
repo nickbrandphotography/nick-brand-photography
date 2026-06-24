@@ -19,7 +19,8 @@ export type Post = {
   metaDescription: string;
   excerpt: string;
   category: string;
-  date: string; // ISO
+  date: string; // ISO — original publish date
+  updated?: string; // ISO — set when the post is meaningfully revised
   readingTime: string;
   heroSilo:
     | "corporate-headshots"

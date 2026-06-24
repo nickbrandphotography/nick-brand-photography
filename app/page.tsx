@@ -17,6 +17,7 @@ import {
   personSchema,
   webSiteSchema,
   faqSchema,
+  imageObjectSchema,
 } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -67,6 +68,7 @@ export default function HomePage() {
           personSchema(),
           webSiteSchema(),
           faqSchema(homeFaqs),
+          imageObjectSchema(heroImage.src, heroImage.alt),
         ]}
       />
 

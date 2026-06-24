@@ -29,10 +29,18 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/corporate-headshots/corporate-headshot-sydney-02.jpg",
+        url: "/images/og/og-default.jpg",
+        width: 1200,
+        height: 630,
         alt: "Book a Sydney photography session with Nick Brand Photography",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: bookTitle,
+    description: bookDescription,
+    images: ["/images/og/og-default.jpg"],
   },
 };
 

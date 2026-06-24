@@ -57,7 +57,7 @@ export const services: Service[] = [
     navLabel: "Corporate Headshots",
     metaTitle: "Corporate Headshots Sydney | Nick Brand Photography",
     metaDescription:
-      "Professional corporate headshots in Sydney. Studio in Lane Cove or on-site at your office. Consistent, polished headshots delivered fast. From $285 per person.",
+      "Professional corporate headshots in Sydney. Studio in Lane Cove or on-site at your office. Consistent, polished headshots delivered fast. From $395 per person; team rate $285.",
     h1: "Corporate Headshots in Sydney",
     eyebrow: "Corporate Headshots",
     summary:

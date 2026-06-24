@@ -21,10 +21,16 @@ export function localBusinessSchema() {
     name: site.name,
     description: site.description,
     url: site.url,
-    image: absoluteUrl("/images/about/nick-brand-photographer-sydney.jpg"),
+    logo: absoluteUrl("/images/og/logo.png"),
+    image: [
+      absoluteUrl("/images/about/nick-brand-photographer-sydney.jpg"),
+      absoluteUrl("/images/corporate-headshots/corporate-headshot-sydney-02.jpg"),
+      absoluteUrl("/images/personal-branding/personal-branding-photography-sydney-01.jpg"),
+    ],
     telephone: site.phoneIntl,
     email: site.email,
     priceRange: "$$$",
+    hasMap: site.social.google,
     founder: { "@id": PERSON_ID },
     address: {
       "@type": "PostalAddress",
@@ -153,6 +159,26 @@ export function breadcrumbSchema(crumbs: { name: string; path: string }[]) {
       name: c.name,
       item: absoluteUrl(c.path),
     })),
+  };
+}
+
+/**
+ * ImageObject schema for a hero/portfolio photograph. Links the image to
+ * Nick (creator) and the business (copyright holder) so Google Images and AI
+ * answer engines can attribute the work correctly.
+ * Pass a site-relative path (e.g. "/images/corporate-headshots/...webp").
+ */
+export function imageObjectSchema(path: string, caption: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    contentUrl: absoluteUrl(path),
+    url: absoluteUrl(path),
+    caption,
+    creditText: site.name,
+    creator: { "@id": PERSON_ID },
+    copyrightNotice: `© ${site.name}`,
+    copyrightHolder: { "@id": ORG_ID },
   };
 }
 

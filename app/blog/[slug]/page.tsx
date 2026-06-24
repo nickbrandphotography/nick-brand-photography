@@ -47,7 +47,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
-  const ogImage = getImage(post.heroSilo, post.heroIndex, undefined, "16x9").jpg;
+  const ogImage = getImage(post.heroSilo, post.heroIndex).jpg;
   return {
     title: post.metaTitle,
     description: post.metaDescription,
@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPost(slug);
   if (!post) notFound();
 
-  const hero = getImage(post.heroSilo, post.heroIndex, post.title, "16x9");
+  const hero = getImage(post.heroSilo, post.heroIndex, post.title);
   const relatedService = getService(post.relatedService);
 
   const crumbs = [
@@ -146,14 +146,16 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
             </div>
-            <div className="relative mt-10 aspect-[16/9] overflow-hidden border border-border">
+            <div className="mt-10 overflow-hidden border border-border bg-ink-2">
               <Image
                 src={hero.src}
                 alt={hero.alt}
-                fill
+                width={hero.width}
+                height={hero.height}
                 priority
                 sizes="(max-width: 1024px) 100vw, 900px"
-                className="object-cover"
+                quality={85}
+                className="h-auto w-full"
               />
             </div>
           </Container>

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { site, absoluteUrl } from "@/lib/site";
 import { services } from "@/lib/services";
-import { nickPortrait, nickPortraitImage } from "@/lib/images";
+import { nickPortrait } from "@/lib/images";
 import { Container, Eyebrow, SectionHeading } from "@/components/Section";
 import Button from "@/components/Button";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -17,9 +17,6 @@ const crumbs = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
 ];
-
-/** About hero sits in a 4:5 container — use the face-aware 4x5 crop. */
-const aboutHero = nickPortraitImage("4x5");
 
 export const metadata: Metadata = {
   title: `About Nick Brand — Sydney Photographer | ${site.name}`,
@@ -80,14 +77,16 @@ export default function AboutPage() {
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden border border-border">
+          <div className="overflow-hidden border border-border bg-ink-2">
             <Image
-              src={aboutHero.src}
-              alt={aboutHero.alt}
-              fill
+              src={nickPortrait.src}
+              alt={nickPortrait.alt}
+              width={nickPortrait.width}
+              height={nickPortrait.height}
               priority
               sizes="(max-width: 1024px) 100vw, 520px"
-              className="object-cover"
+              quality={85}
+              className="h-auto w-full"
             />
           </div>
         </Container>

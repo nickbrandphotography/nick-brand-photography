@@ -92,7 +92,6 @@ export default function BlogPage() {
                 post.heroSilo,
                 post.heroIndex,
                 post.title,
-                "3x2",
               );
               return (
                 <Link
@@ -100,13 +99,14 @@ export default function BlogPage() {
                   href={`/blog/${post.slug}`}
                   className="group flex flex-col border border-border bg-surface transition-colors hover:border-gold"
                 >
-                  <div className="relative aspect-[3/2] overflow-hidden">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-ink-2">
                     <Image
                       src={img.src}
                       alt={img.alt}
                       fill
                       sizes="(max-width: 1024px) 100vw, 360px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      quality={82}
+                      className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="flex grow flex-col p-6">

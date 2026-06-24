@@ -22,8 +22,8 @@ import JsonLd from "./JsonLd";
 
 /** Full service silo page, rendered from a Service definition. */
 export default function ServicePageTemplate({ service }: { service: Service }) {
-  const hero = getImage(service.heroSilo, service.heroIndex, service.h1, "4x5");
-  const gallery = getImages(service.gallerySilo, service.galleryCount, service.navLabel, "4x5");
+  const hero = getImage(service.heroSilo, service.heroIndex, service.h1);
+  const gallery = getImages(service.gallerySilo, service.galleryCount, service.navLabel);
   const related = service.related
     .map((slug) => getService(slug))
     .filter((s): s is Service => Boolean(s));
@@ -64,14 +64,16 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[3/2] lg:aspect-[4/5]">
+          <div className="overflow-hidden border border-border bg-ink-2">
             <Image
               src={hero.src}
               alt={hero.alt}
-              fill
+              width={hero.width}
+              height={hero.height}
               priority
               sizes="(max-width: 1024px) 100vw, 520px"
-              className="object-cover"
+              quality={85}
+              className="h-auto w-full"
             />
           </div>
         </Container>
@@ -231,7 +233,7 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
 export function serviceMetadata(slug: string) {
   const service = getService(slug);
   if (!service) return {};
-  const ogImage = getImage(service.heroSilo, service.heroIndex, undefined, "16x9").jpg;
+  const ogImage = getImage(service.heroSilo, service.heroIndex).jpg;
   return {
     title: service.metaTitle,
     description: service.metaDescription,

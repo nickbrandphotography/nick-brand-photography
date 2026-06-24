@@ -20,8 +20,8 @@ export default function LocationPageTemplate({
 }: {
   location: Location;
 }) {
-  const hero = getImage("corporate-headshots", 9, `Corporate headshots in ${location.suburb}`, "4x5");
-  const gallery = getImages("corporate-headshots", 6, `${location.suburb} corporate headshots`, "4x5");
+  const hero = getImage("corporate-headshots", 9, `Corporate headshots in ${location.suburb}`);
+  const gallery = getImages("corporate-headshots", 6, `${location.suburb} corporate headshots`);
 
   const crumbs = [
     { name: "Home", path: "/" },
@@ -59,14 +59,16 @@ export default function LocationPageTemplate({
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[3/2] lg:aspect-[4/5]">
+          <div className="overflow-hidden border border-border bg-ink-2">
             <Image
               src={hero.src}
               alt={hero.alt}
-              fill
+              width={hero.width}
+              height={hero.height}
               priority
               sizes="(max-width: 1024px) 100vw, 520px"
-              className="object-cover"
+              quality={85}
+              className="h-auto w-full"
             />
           </div>
         </Container>
@@ -172,7 +174,7 @@ export function locationMetadata(location: Location) {
       type: "website",
       images: [
         {
-          url: getImage("corporate-headshots", 9, undefined, "16x9").jpg,
+          url: getImage("corporate-headshots", 9).jpg,
           alt: location.h1,
         },
       ],

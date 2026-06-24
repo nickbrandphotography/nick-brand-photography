@@ -30,13 +30,11 @@ const heroImage = getImage(
   "corporate-headshots",
   2,
   "Sydney corporate headshot by Nick Brand Photography",
-  "4x5",
 );
 const featured = getImages(
   "corporate-headshots",
   6,
   "Sydney corporate and branding photography",
-  "4x5",
 );
 
 const homeFaqs = [
@@ -96,14 +94,16 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden border border-border">
+          <div className="overflow-hidden border border-border bg-ink-2">
             <Image
               src={heroImage.src}
               alt={heroImage.alt}
-              fill
+              width={heroImage.width}
+              height={heroImage.height}
               priority
               sizes="(max-width: 1024px) 100vw, 540px"
-              className="object-cover"
+              quality={85}
+              className="h-auto w-full"
             />
           </div>
         </Container>
@@ -126,20 +126,21 @@ export default function HomePage() {
           />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => {
-              const img = getImage(s.heroSilo, s.heroIndex, s.navLabel, "3x2");
+              const img = getImage(s.heroSilo, s.heroIndex, s.navLabel);
               return (
                 <Link
                   key={s.slug}
                   href={`/${s.slug}`}
                   className="group flex flex-col border border-border bg-surface transition-colors hover:border-gold"
                 >
-                  <div className="relative aspect-[3/2] overflow-hidden">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-ink-2">
                     <Image
                       src={img.src}
                       alt={img.alt}
                       fill
                       sizes="(max-width: 1024px) 100vw, 360px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      quality={82}
+                      className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="flex grow flex-col p-6">
@@ -163,13 +164,15 @@ export default function HomePage() {
       {/* About teaser */}
       <section className="section bg-ink">
         <Container className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="relative aspect-[3/2] overflow-hidden border border-border">
+          <div className="overflow-hidden border border-border bg-ink-2">
             <Image
               src={nickPortrait.src}
               alt={nickPortrait.alt}
-              fill
+              width={nickPortrait.width}
+              height={nickPortrait.height}
               sizes="(max-width: 1024px) 100vw, 540px"
-              className="object-cover"
+              quality={85}
+              className="h-auto w-full"
             />
           </div>
           <div>

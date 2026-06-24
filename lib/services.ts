@@ -244,7 +244,7 @@ export const services: Service[] = [
     summary:
       "Considered, authoritative portraits for senior leaders, partners and boards.",
     heroSilo: "corporate-headshots",
-    heroIndex: 33,
+    heroIndex: 35,
     intro: [
       "An executive portrait carries more weight than a standard headshot. It appears in annual reports, investor decks, press coverage, award submissions and the leadership page of your website — contexts where the image needs to convey authority and judgement, not just identification.",
       "Nick Brand Photography produces executive portraits in Sydney with a more deliberate approach to lighting, posing and environment, photographed in-studio or in your own boardroom or office.",
@@ -685,7 +685,7 @@ export const services: Service[] = [
     summary:
       "Relaxed, natural family sessions at Sydney's beaches and parks.",
     heroSilo: "family",
-    heroIndex: 1,
+    heroIndex: 4,
     intro: [
       "Family photography should feel like a good afternoon out, not a stiff studio appointment. The best family images come from a relaxed session where everyone — including the kids and the dog — is comfortable enough to be themselves.",
       "Nick Brand Photography runs natural, outdoor family sessions at Sydney beaches, parks and golden-hour locations, with honest direction that keeps the day easy and the photos genuine.",

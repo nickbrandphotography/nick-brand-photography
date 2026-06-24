@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Location } from "@/lib/locations";
-import { getImage, getImages } from "@/lib/images";
+import { getImage, pickImages } from "@/lib/images";
+import { locationGallery } from "@/lib/galleries";
 import { site, absoluteUrl } from "@/lib/site";
 import { faqSchema, breadcrumbSchema, imageObjectSchema } from "@/lib/schema";
 import { Container, Eyebrow, SectionHeading } from "./Section";
@@ -21,7 +22,7 @@ export default function LocationPageTemplate({
   location: Location;
 }) {
   const hero = getImage("corporate-headshots", 9, `Corporate headshots in ${location.suburb}`);
-  const gallery = getImages("corporate-headshots", 6, `${location.suburb} corporate headshots`);
+  const gallery = pickImages(locationGallery);
 
   const crumbs = [
     { name: "Home", path: "/" },

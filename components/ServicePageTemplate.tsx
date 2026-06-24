@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Service } from "@/lib/services";
 import { getService } from "@/lib/services";
-import { getImage, getImages } from "@/lib/images";
+import { getImage, getImages, pickImages } from "@/lib/images";
+import { serviceGalleries } from "@/lib/galleries";
 import { site, absoluteUrl } from "@/lib/site";
 import {
   serviceSchema,
@@ -23,7 +24,10 @@ import JsonLd from "./JsonLd";
 /** Full service silo page, rendered from a Service definition. */
 export default function ServicePageTemplate({ service }: { service: Service }) {
   const hero = getImage(service.heroSilo, service.heroIndex, service.h1);
-  const gallery = getImages(service.gallerySilo, service.galleryCount, service.navLabel);
+  const curated = serviceGalleries[service.slug];
+  const gallery = curated
+    ? pickImages(curated)
+    : getImages(service.gallerySilo, service.galleryCount, service.navLabel);
   const related = service.related
     .map((slug) => getService(slug))
     .filter((s): s is Service => Boolean(s));

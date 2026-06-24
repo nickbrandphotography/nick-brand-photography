@@ -18,7 +18,7 @@ export type SiteImage = {
   height: number; // intrinsic pixel height
 };
 
-type SiloKey =
+export type SiloKey =
   | "corporate-headshots"
   | "actor-headshots"
   | "model-portfolios"
@@ -114,6 +114,24 @@ export function getImages(
 /** A single image by silo + index (1-based). */
 export function getImage(silo: SiloKey, index = 1, alt?: string): SiteImage {
   return getImages(silo, index, alt)[index - 1];
+}
+
+/**
+ * A hand-picked gallery image: an explicit silo + index plus its own unique
+ * alt text. Used by lib/galleries.ts to curate which photos appear where
+ * (varied people, staggered light/dark backgrounds, no cross-page repeats).
+ */
+export type GalleryPick = { silo: SiloKey; i: number; alt: string };
+
+/** Build SiteImages from an explicit, curated list of picks. */
+export function pickImages(picks: GalleryPick[]): SiteImage[] {
+  return picks.map(({ silo, i, alt }) => {
+    const meta = SILOS[silo];
+    const num = String(i).padStart(2, "0");
+    const base = `/images/${silo}/${meta.slug}-${num}`;
+    const [width, height] = getDimensions(base);
+    return { src: `${base}.webp`, jpg: `${base}.jpg`, alt, width, height };
+  });
 }
 
 /** Portrait of Nick for the About page and blog author byline. */

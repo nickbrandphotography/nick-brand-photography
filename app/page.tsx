@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { site, absoluteUrl } from "@/lib/site";
 import { services } from "@/lib/services";
-import { getImage, getImages, nickPortrait } from "@/lib/images";
+import { getImage, pickImages, nickPortrait } from "@/lib/images";
+import { homeFeatured } from "@/lib/galleries";
 import { Container, Eyebrow, SectionHeading } from "@/components/Section";
 import Button from "@/components/Button";
 import TrustStats from "@/components/TrustStats";
@@ -31,11 +32,7 @@ const heroImage = getImage(
   2,
   "Sydney corporate headshot by Nick Brand Photography",
 );
-const featured = getImages(
-  "corporate-headshots",
-  6,
-  "Sydney corporate and branding photography",
-);
+const featured = pickImages(homeFeatured);
 
 const homeFaqs = [
   {

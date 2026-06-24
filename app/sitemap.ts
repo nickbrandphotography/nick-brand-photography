@@ -71,6 +71,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const conversionPages: MetadataRoute.Sitemap = [
     {
+      url: absoluteUrl("/portfolio"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: absoluteUrl("/about"),
       lastModified: now,
       changeFrequency: "monthly",

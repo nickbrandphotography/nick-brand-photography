@@ -95,6 +95,14 @@ export default function Footer() {
             <ul className="mt-5 space-y-2.5">
               <li>
                 <Link
+                  href="/portfolio"
+                  className="text-sm text-muted transition-colors hover:text-cream"
+                >
+                  Portfolio
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/about"
                   className="text-sm text-muted transition-colors hover:text-cream"
                 >

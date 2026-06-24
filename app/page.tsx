@@ -206,6 +206,11 @@ export default function HomePage() {
           <div className="mt-10">
             <Gallery images={featured} />
           </div>
+          <div className="mt-10 text-center">
+            <Button href="/portfolio" variant="outline">
+              View the Full Portfolio
+            </Button>
+          </div>
         </Container>
       </section>
 

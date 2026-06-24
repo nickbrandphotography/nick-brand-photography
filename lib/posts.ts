@@ -49,7 +49,7 @@ export const posts: Post[] = [
     updated: "2026-06-24",
     readingTime: "6 min read",
     heroSilo: "corporate-headshots",
-    heroIndex: 6,
+    heroIndex: 2,
     intro: [
       "What you wear is the single thing you control most on a headshot day. Get it right and the photo looks effortless. Get it wrong and even perfect lighting cannot fully fix it — a busy pattern, a bad neckline or a creased collar pulls attention straight off your face.",
       "After 20 years photographing Sydney professionals, the same wardrobe decisions come up on almost every shoot. This guide covers what works, what to avoid, and how to prepare, so you arrive ready and leave with a headshot you will actually use.",

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 const heroImage = getImage(
   "corporate-headshots",
-  2,
+  6,
   "Sydney corporate headshot by Nick Brand Photography",
 );
 const featured = pickImages(homeFeatured);

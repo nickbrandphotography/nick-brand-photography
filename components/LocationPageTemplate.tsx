@@ -20,8 +20,8 @@ export default function LocationPageTemplate({
 }: {
   location: Location;
 }) {
-  const hero = getImage("corporate-headshots", 9, `Corporate headshots in ${location.suburb}`);
-  const gallery = getImages("corporate-headshots", 6, `${location.suburb} corporate headshots`);
+  const hero = getImage("corporate-headshots", 9, `Corporate headshots in ${location.suburb}`, "4x5");
+  const gallery = getImages("corporate-headshots", 6, `${location.suburb} corporate headshots`, "4x5");
 
   const crumbs = [
     { name: "Home", path: "/" },
@@ -172,7 +172,7 @@ export function locationMetadata(location: Location) {
       type: "website",
       images: [
         {
-          url: getImage("corporate-headshots", 9).jpg,
+          url: getImage("corporate-headshots", 9, undefined, "16x9").jpg,
           alt: location.h1,
         },
       ],

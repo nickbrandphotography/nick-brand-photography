@@ -30,11 +30,13 @@ const heroImage = getImage(
   "corporate-headshots",
   2,
   "Sydney corporate headshot by Nick Brand Photography",
+  "4x5",
 );
 const featured = getImages(
   "corporate-headshots",
   6,
   "Sydney corporate and branding photography",
+  "4x5",
 );
 
 const homeFaqs = [
@@ -124,7 +126,7 @@ export default function HomePage() {
           />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => {
-              const img = getImage(s.heroSilo, s.heroIndex, s.navLabel);
+              const img = getImage(s.heroSilo, s.heroIndex, s.navLabel, "3x2");
               return (
                 <Link
                   key={s.slug}

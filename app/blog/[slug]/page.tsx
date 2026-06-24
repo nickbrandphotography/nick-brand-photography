@@ -47,7 +47,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
-  const ogImage = getImage(post.heroSilo, post.heroIndex).jpg;
+  const ogImage = getImage(post.heroSilo, post.heroIndex, undefined, "16x9").jpg;
   return {
     title: post.metaTitle,
     description: post.metaDescription,
@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPost(slug);
   if (!post) notFound();
 
-  const hero = getImage(post.heroSilo, post.heroIndex, post.title);
+  const hero = getImage(post.heroSilo, post.heroIndex, post.title, "16x9");
   const relatedService = getService(post.relatedService);
 
   const crumbs = [

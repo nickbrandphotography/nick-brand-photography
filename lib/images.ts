@@ -10,6 +10,16 @@ export type SiteImage = {
   alt: string;
 };
 
+/**
+ * Container aspect ratio for an image slot. When passed, the matching
+ * pre-cropped, face-aware variant is returned (see scripts/recrop-images.mjs):
+ *   4x5  → heroes, galleries, About hero
+ *   3x2  → homepage service cards, blog index thumbnails
+ *   16x9 → blog post heroes, Open Graph images
+ * Omit it to get the original, un-cropped file.
+ */
+export type Ratio = "4x5" | "3x2" | "16x9";
+
 type SiloKey =
   | "corporate-headshots"
   | "actor-headshots"
@@ -79,13 +89,15 @@ export function getImages(
   silo: SiloKey,
   limit?: number,
   altOverride?: string,
+  ratio?: Ratio,
 ): SiteImage[] {
   const meta = SILOS[silo];
   const n = limit ? Math.min(limit, meta.count) : meta.count;
+  const suffix = ratio ? `-${ratio}` : "";
   const out: SiteImage[] = [];
   for (let i = 1; i <= n; i++) {
     const num = String(i).padStart(2, "0");
-    const base = `/images/${silo}/${meta.slug}-${num}`;
+    const base = `/images/${silo}/${meta.slug}-${num}${suffix}`;
     // Alt text: prefer a descriptive override (e.g. "Corporate headshots in
     // Lane Cove") because it gives search engines and screen readers real
     // context. We intentionally do NOT append "— image N" — that's noise,
@@ -103,13 +115,30 @@ export function getImages(
 }
 
 /** A single image by silo + index (1-based). */
-export function getImage(silo: SiloKey, index = 1, alt?: string): SiteImage {
-  return getImages(silo, index, alt)[index - 1];
+export function getImage(
+  silo: SiloKey,
+  index = 1,
+  alt?: string,
+  ratio?: Ratio,
+): SiteImage {
+  return getImages(silo, index, alt, ratio)[index - 1];
 }
 
-/** Portrait of Nick for the About page. */
+/** Portrait of Nick for the About page (original 3:2 — used in the homepage
+ * teaser and as the blog author avatar). */
 export const nickPortrait: SiteImage = {
   src: "/images/about/nick-brand-photographer-sydney.webp",
   jpg: "/images/about/nick-brand-photographer-sydney.jpg",
   alt: "Nick Brand, Sydney corporate and portrait photographer",
 };
+
+/** Portrait of Nick at a specific crop ratio (the About hero uses 4x5). */
+export function nickPortraitImage(ratio?: Ratio): SiteImage {
+  const suffix = ratio ? `-${ratio}` : "";
+  const base = `/images/about/nick-brand-photographer-sydney${suffix}`;
+  return {
+    src: `${base}.webp`,
+    jpg: `${base}.jpg`,
+    alt: "Nick Brand, Sydney corporate and portrait photographer",
+  };
+}

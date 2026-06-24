@@ -92,6 +92,7 @@ export default function BlogPage() {
                 post.heroSilo,
                 post.heroIndex,
                 post.title,
+                "3x2",
               );
               return (
                 <Link

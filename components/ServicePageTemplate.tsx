@@ -22,8 +22,8 @@ import JsonLd from "./JsonLd";
 
 /** Full service silo page, rendered from a Service definition. */
 export default function ServicePageTemplate({ service }: { service: Service }) {
-  const hero = getImage(service.heroSilo, service.heroIndex, service.h1);
-  const gallery = getImages(service.gallerySilo, service.galleryCount, service.navLabel);
+  const hero = getImage(service.heroSilo, service.heroIndex, service.h1, "4x5");
+  const gallery = getImages(service.gallerySilo, service.galleryCount, service.navLabel, "4x5");
   const related = service.related
     .map((slug) => getService(slug))
     .filter((s): s is Service => Boolean(s));
@@ -231,7 +231,7 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
 export function serviceMetadata(slug: string) {
   const service = getService(slug);
   if (!service) return {};
-  const ogImage = getImage(service.heroSilo, service.heroIndex).jpg;
+  const ogImage = getImage(service.heroSilo, service.heroIndex, undefined, "16x9").jpg;
   return {
     title: service.metaTitle,
     description: service.metaDescription,

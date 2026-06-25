@@ -63,7 +63,7 @@ export const services: Service[] = [
     summary:
       "Polished, consistent corporate headshots for Sydney professionals and teams — studio or on-site.",
     heroSilo: "corporate-headshots",
-    heroIndex: 4,
+    heroIndex: 6,
     intro: [
       "A corporate headshot is the first impression most clients, candidates and colleagues form of you. Nick Brand Photography produces clean, confident corporate headshots for Sydney professionals — images that look credible on a company website, a tender document, a conference bio or LinkedIn.",
       "Shoots run from the Lane Cove studio or on-site at your Sydney office. Every headshot is consistently lit and edited, so a team of five or a team of fifty looks like it belongs together.",

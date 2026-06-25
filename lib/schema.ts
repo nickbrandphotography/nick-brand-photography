@@ -176,9 +176,20 @@ export function imageObjectSchema(path: string, caption: string) {
     url: absoluteUrl(path),
     caption,
     creditText: site.name,
-    creator: { "@id": PERSON_ID },
+    // creator must be a self-contained Person/Organization object: the
+    // ImageObject often renders in its own JSON-LD block where a bare
+    // { "@id": … } reference can't resolve, which Google's Image Metadata
+    // validator reports as "Invalid object type for field creator".
+    creator: {
+      "@type": "Person",
+      "@id": PERSON_ID,
+      name: site.founder,
+    },
     copyrightNotice: `© ${site.name}`,
     copyrightHolder: { "@id": ORG_ID },
+    // Licensing fields enable the Google Images "Licensable" badge.
+    license: absoluteUrl("/image-licensing"),
+    acquireLicensePage: absoluteUrl("/image-licensing"),
   };
 }
 

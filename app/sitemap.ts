@@ -16,7 +16,7 @@ import { locations } from "@/lib/locations";
  * Bump this when you make substantive content changes to service/location/
  * static pages. Blog posts carry their own publish dates automatically.
  */
-const CONTENT_UPDATED = new Date("2026-06-22");
+const CONTENT_UPDATED = new Date("2026-06-25");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = CONTENT_UPDATED;
@@ -93,6 +93,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: absoluteUrl("/image-licensing"),
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
 

@@ -134,6 +134,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link
+                  href="/image-licensing"
+                  className="text-sm text-muted transition-colors hover:text-cream"
+                >
+                  Image Licensing
+                </Link>
+              </li>
+              <li>
                 <a
                   href={site.social.instagram}
                   target="_blank"
@@ -171,7 +179,13 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col gap-2 border-t border-border pt-6 text-xs text-faint sm:flex-row sm:justify-between">
           <p>
-            &copy; {year} {site.name}. All rights reserved.
+            &copy; {year} {site.name}.{" "}
+            <Link
+              href="/image-licensing"
+              className="transition-colors hover:text-cream"
+            >
+              All rights reserved.
+            </Link>
           </p>
           <p>Corporate &amp; personal branding photography — Sydney, Australia.</p>
         </div>

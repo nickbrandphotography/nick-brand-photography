@@ -27,6 +27,18 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/") },
 };
 
+/**
+ * Render the homepage on-demand from the deployment serving the request,
+ * instead of from a statically-cached payload. This prevents Vercel
+ * "version skew": after a new deploy, a client-side navigation back to "/"
+ * (e.g. Events → Home) was being answered with an older build, which reverted
+ * the hero to a previous photo. Forcing dynamic rendering means "/" always
+ * reflects the current build. The page uses only static data, so the rendered
+ * output is identical — the only change is it is generated per request rather
+ * than cached at build time.
+ */
+export const dynamic = "force-dynamic";
+
 const heroImage = getImage(
   "corporate-headshots",
   6,

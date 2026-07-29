@@ -9,29 +9,29 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-ink/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-5 py-4 sm:px-8">
         <Link
           href="/"
-          className="font-display text-lg tracking-wide text-cream"
+          className="shrink-0 whitespace-nowrap font-display text-lg tracking-wide text-cream"
           onClick={() => setOpen(false)}
         >
           Nick Brand
           <span className="text-gold"> Photography</span>
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-5 xl:flex">
           {mainNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-[0.82rem] tracking-wide text-muted transition-colors hover:text-cream"
+              className="whitespace-nowrap text-[0.8rem] tracking-wide text-muted transition-colors hover:text-cream"
             >
               {item.label}
             </Link>
           ))}
           <Link
             href="/book"
-            className="bg-gold px-5 py-2.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-gold-soft"
+            className="whitespace-nowrap bg-gold px-5 py-2.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-gold-soft"
           >
             Book Now
           </Link>
@@ -42,7 +42,7 @@ export default function Header() {
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
-          className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 lg:hidden"
+          className="flex h-9 w-9 shrink-0 flex-col items-center justify-center gap-1.5 xl:hidden"
         >
           <span
             className={`h-px w-6 bg-cream transition-transform ${
@@ -63,7 +63,7 @@ export default function Header() {
       </div>
 
       {open ? (
-        <nav className="border-t border-border bg-ink-2 lg:hidden">
+        <nav className="border-t border-border bg-ink-2 xl:hidden">
           <div className="mx-auto flex w-full max-w-6xl flex-col px-5 py-3 sm:px-8">
             {mainNav.map((item) => (
               <Link

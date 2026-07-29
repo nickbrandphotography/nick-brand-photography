@@ -332,7 +332,7 @@ values ('Nick Brand Photography', 'nick-brand-photography', 'Australia/Sydney')
 on conflict (slug) do nothing;
 
 insert into staff (organization_id, display_name, email, role)
-select id, 'Nick Brand', 'info@nickbrandphotography.com', 'owner'
+select id, 'Nick Brand', 'studio@nickbrandphotography.com', 'owner'
 from organizations where slug = 'nick-brand-photography'
 on conflict do nothing;
 

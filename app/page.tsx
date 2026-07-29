@@ -57,7 +57,7 @@ const homeFaqs = [
   },
   {
     q: "How do I book a photography session?",
-    a: "Bookings are made online through the booking page, which shows live availability. You can also call 0403 835 467 or email info@nickbrandphotography.com to discuss a shoot.",
+    a: "Bookings are made online through the booking page, which shows live availability. You can also call 0403 835 467 or email studio@nickbrandphotography.com to discuss a shoot.",
   },
   {
     q: "Do you photograph teams at their own office?",

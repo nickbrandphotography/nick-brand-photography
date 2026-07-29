@@ -36,7 +36,7 @@
 | **Website** | www.nickbrandphotography.com |
 | **Studio address** | 84 Centennial Avenue, Lane Cove NSW 2066 |
 | **Phone** | 0403 835 467 · +61403835467 |
-| **Email** | info@nickbrandphotography.com |
+| **Email** | studio@nickbrandphotography.com |
 | **Hours** | 7am–7pm, 7 days |
 | **Booking URL** | /book (custom on-site system) |
 | **Instagram** | @nickbrandphotography |
@@ -685,7 +685,7 @@ Until the backend is connected, the booking page functions as a lead capture for
 ### 7.3 Contact Form
 
 - Web3Forms key: `4d67606b-b793-496d-bcca-261e85487957` — **active and live**
-- Delivers to: info@nickbrandphotography.com
+- Delivers to: studio@nickbrandphotography.com
 - Fallback if key missing: shows phone + email only
 
 ### 7.4 CTA Placements (Per Page Type)

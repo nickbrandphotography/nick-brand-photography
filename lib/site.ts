@@ -19,7 +19,7 @@ export const site = {
   // Contact
   phone: "0403 835 467",
   phoneIntl: "+61403835467",
-  email: "info@nickbrandphotography.com",
+  email: "studio@nickbrandphotography.com",
   // The custom booking system on /book. Every "Book a Session" button on the
   // site links here. (Previously an external Calendly URL.)
   bookingUrl: "/book",
@@ -82,6 +82,7 @@ export const mainNav: { label: string; href: string }[] = [
   { label: "Family Sessions", href: "/family-photography-sydney" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 /** Helper to build absolute URLs for canonicals and schema. */

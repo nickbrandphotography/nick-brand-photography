@@ -32,7 +32,26 @@ import {
   type TravelZone,
 } from "@/lib/booking";
 
-type Step = "service" | "datetime" | "details" | "enquiry" | "done";
+type Step =
+  | "service"
+  | "datetime"
+  | "details"
+  | "enquiry"
+  | "resuming"
+  | "done";
+
+/** What the post-Stripe-redirect confirmation payload looks like once paid. */
+type PaidInfo = {
+  reference: string;
+  manageToken: string;
+  sessionName: string;
+  dateLabel: string;
+  timeLabel: string;
+  locationLabel: string;
+  depositAud: number;
+  totalAud: number;
+  customerName: string;
+};
 type LocationMode = "studio" | "onlocation";
 
 type FormState = {
@@ -85,6 +104,92 @@ export default function BookingFlow() {
   const [submitError, setSubmitError] = useState<string>("");
   const [reference, setReference] = useState<string>("");
   const [manageToken, setManageToken] = useState<string>("");
+
+  // State for resuming after a Stripe Checkout redirect back to /book.
+  const [resumeStatus, setResumeStatus] = useState<
+    "checking" | "paid" | "unpaid" | "timeout" | "error"
+  >("checking");
+  const [resumeMessage, setResumeMessage] = useState("");
+  const [paidInfo, setPaidInfo] = useState<PaidInfo | null>(null);
+  const [cancelledNotice, setCancelledNotice] = useState(false);
+
+  // On mount, check whether we've just been redirected back from Stripe
+  // Checkout. The page fully navigates away for payment, so this is a
+  // fresh mount — everything needed to show the confirmation comes back
+  // from the status endpoint, not from local state.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const cancelled = params.get("cancelled");
+
+    if (cancelled) {
+      setCancelledNotice(true);
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    if (!sessionId) return;
+
+    setStep("resuming");
+    setResumeStatus("checking");
+    window.history.replaceState({}, "", window.location.pathname);
+
+    let cancelledPoll = false;
+    const maxAttempts = 10;
+
+    async function poll(attempt: number) {
+      if (cancelledPoll) return;
+      try {
+        const res = await fetch(
+          `/api/checkout/status?session_id=${encodeURIComponent(sessionId!)}`,
+        );
+        const json = await res.json();
+
+        if (json.status === "paid") {
+          setPaidInfo({
+            reference: json.reference,
+            manageToken: json.manageToken,
+            sessionName: json.sessionName,
+            dateLabel: json.dateLabel,
+            timeLabel: json.timeLabel,
+            locationLabel: json.locationLabel,
+            depositAud: json.depositAud,
+            totalAud: json.totalAud,
+            customerName: json.customerName,
+          });
+          setResumeStatus("paid");
+          return;
+        }
+        if (json.status === "unpaid") {
+          setResumeStatus("unpaid");
+          return;
+        }
+        if (json.status === "error") {
+          setResumeMessage(json.message || "Something went wrong.");
+          setResumeStatus("error");
+          return;
+        }
+        // "processing" — payment succeeded, webhook hasn't landed yet.
+        if (attempt >= maxAttempts) {
+          setResumeStatus("timeout");
+          return;
+        }
+        setTimeout(() => poll(attempt + 1), 1500);
+      } catch {
+        if (attempt >= maxAttempts) {
+          setResumeStatus("timeout");
+          return;
+        }
+        setTimeout(() => poll(attempt + 1), 1500);
+      }
+    }
+
+    poll(0);
+    return () => {
+      cancelledPoll = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const markBlurred = useCallback((name: keyof FormState) => {
     setBlurred((prev) => (prev[name] ? prev : { ...prev, [name]: true }));
@@ -171,8 +276,12 @@ export default function BookingFlow() {
     setSubmitting(true);
 
     if (step === "details" && service && selectedDate && selectedSlot) {
+      // Priced sessions now go through Stripe Checkout for the deposit.
+      // The calendar slot is only reserved once Stripe confirms payment
+      // (see app/api/stripe/webhook) — this call just starts checkout and
+      // redirects the whole page there.
       try {
-        const res = await fetch("/api/bookings", {
+        const res = await fetch("/api/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -188,25 +297,26 @@ export default function BookingFlow() {
             phone: form.phone,
             company: form.company,
             note: form.note,
+            dateLabel: formatLongDate(selectedDate),
+            timeLabel: selectedSlot.label,
+            locationLabel:
+              locationMode === "onlocation"
+                ? `On-location — ${postcode}`
+                : "Lane Cove Studio, Sydney",
           }),
         });
-        if (res.ok) {
-          const json = await res.json();
-          setReference(json.reference);
-          setManageToken(json.manageToken);
-        } else {
-          // Server error — surface the message so the user knows it failed.
-          let msg = "We couldn't confirm your booking. Please try again.";
-          try {
-            const json = await res.json();
-            if (json && typeof json.error === "string") msg = json.error;
-          } catch {
-            /* response wasn't JSON — keep generic message */
-          }
-          setSubmitError(msg);
-          setSubmitting(false);
-          return;
+        const json = await res.json();
+        if (res.ok && json.url) {
+          window.location.href = json.url;
+          return; // leave `submitting` true — the page is navigating away
         }
+        setSubmitError(
+          typeof json.error === "string"
+            ? json.error
+            : "We couldn't start checkout. Please try again.",
+        );
+        setSubmitting(false);
+        return;
       } catch {
         setSubmitError(
           "We couldn't reach the booking server. Check your connection and try again.",
@@ -214,12 +324,11 @@ export default function BookingFlow() {
         setSubmitting(false);
         return;
       }
-    } else {
-      // Enquiry path — no booking record created yet; just show done.
-      setReference("");
-      setManageToken("");
     }
 
+    // Enquiry path — no payment involved; no booking record created yet.
+    setReference("");
+    setManageToken("");
     setSubmitting(false);
     setTouched(false);
     setStep("done");
@@ -232,6 +341,17 @@ export default function BookingFlow() {
       <StepRail step={step} mode={service?.mode ?? "instant"} />
 
       <div className="p-6 sm:p-9">
+        {cancelledNotice && step === "service" && (
+          <div className="mb-6 border border-border-strong bg-ink-2 px-4 py-3 text-sm text-muted">
+            Checkout was cancelled — no charge was made. Pick a session below
+            to try again, or call{" "}
+            <a href={`tel:${site.phoneIntl}`} className="text-gold">
+              {site.phone}
+            </a>{" "}
+            to book over the phone.
+          </div>
+        )}
+
         {step === "service" && (
           <ServiceStep onChoose={chooseService} selectedId={serviceId} />
         )}
@@ -309,14 +429,23 @@ export default function BookingFlow() {
 
         {step === "done" && service && (
           <DoneStep
-            service={service}
-            date={selectedDate}
-            slot={selectedSlot}
-            locationMode={locationMode}
-            postcode={postcode}
+            isEnquiry
+            sessionName={service.name}
+            dateLabel={null}
+            timeLabel={null}
+            locationLabel={null}
             reference={reference}
             manageToken={manageToken}
             name={form.name}
+            onRestart={restart}
+          />
+        )}
+
+        {step === "resuming" && (
+          <ResumingStep
+            status={resumeStatus}
+            message={resumeMessage}
+            paidInfo={paidInfo}
             onRestart={restart}
           />
         )}
@@ -340,6 +469,7 @@ function StepRail({ step, mode }: { step: Step; mode: "instant" | "enquiry" }) {
     datetime: 1,
     details: 2,
     enquiry: 1,
+    resuming: labels.length - 1,
     done: labels.length - 1,
   };
   const active = indexByStep[step];
@@ -924,12 +1054,13 @@ function DetailsStep({
             className="mt-6 w-full bg-gold px-8 py-4 text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft disabled:opacity-50"
           >
             {submitting
-              ? "Confirming…"
-              : `Confirm booking · ${AUD(deposit)} deposit`}
+              ? "Redirecting to secure payment…"
+              : `Continue to payment · ${AUD(deposit)} deposit`}
           </button>
           <p className="mt-3 text-center text-[0.72rem] text-faint">
-            Secure payment connects when Stripe is enabled. No card is charged
-            in this preview.
+            You&rsquo;ll pay the deposit on Stripe&rsquo;s secure checkout,
+            then return here for your confirmation. The slot is only
+            reserved once payment succeeds.
           </p>
         </form>
 
@@ -1108,32 +1239,27 @@ function EnquiryStep({
 /* ======================================================================== */
 
 function DoneStep({
-  service,
-  date,
-  slot,
-  locationMode,
-  postcode,
+  isEnquiry,
+  sessionName,
+  dateLabel,
+  timeLabel,
+  locationLabel,
   reference,
   manageToken,
   name,
   onRestart,
 }: {
-  service: SessionType;
-  date: Date | null;
-  slot: Slot | null;
-  locationMode: LocationMode;
-  postcode: string;
+  isEnquiry: boolean;
+  sessionName: string;
+  dateLabel?: string | null;
+  timeLabel?: string | null;
+  locationLabel?: string | null;
   reference: string;
   manageToken: string;
   name: string;
   onRestart: () => void;
 }) {
-  const isEnquiry = service.mode === "enquiry";
   const firstName = name.trim().split(/\s+/)[0] || "there";
-  const locationLabel =
-    locationMode === "onlocation"
-      ? `On-location · ${postcode}`
-      : "Lane Cove studio";
 
   return (
     <div className="py-4 text-center">
@@ -1151,13 +1277,14 @@ function DoneStep({
           </>
         ) : (
           <>
-            Thanks {firstName} — your session is reserved. A confirmation email
-            with calendar invite and prep notes is on its way.
+            Thanks {firstName} — your deposit is paid and the slot is reserved.
+            A confirmation email with calendar invite and prep notes is on its
+            way.
           </>
         )}
       </p>
 
-      {!isEnquiry && date && slot && (
+      {!isEnquiry && dateLabel && timeLabel && (
         <div className="mx-auto mt-7 max-w-sm border border-border bg-ink-2 p-6 text-left">
           <div className="flex items-center justify-between">
             <span className="eyebrow">Confirmed</span>
@@ -1166,12 +1293,14 @@ function DoneStep({
             </span>
           </div>
           <h4 className="font-display mt-3 text-lg leading-snug text-cream">
-            {service.name}
+            {sessionName}
           </h4>
           <dl className="mt-4 space-y-2.5 text-sm">
-            <SummaryRow label="Date" value={formatLongDate(date)} />
-            <SummaryRow label="Time" value={slot.label} />
-            <SummaryRow label="Location" value={locationLabel} />
+            <SummaryRow label="Date" value={dateLabel} />
+            <SummaryRow label="Time" value={timeLabel} />
+            {locationLabel && (
+              <SummaryRow label="Location" value={locationLabel} />
+            )}
           </dl>
         </div>
       )}
@@ -1203,6 +1332,96 @@ function DoneStep({
           Back to home
         </Link>
       </div>
+    </div>
+  );
+}
+
+/* ======================================================================== */
+/*  Resuming — shown after Stripe redirects back to /book?session_id=...   */
+/* ======================================================================== */
+
+function ResumingStep({
+  status,
+  message,
+  paidInfo,
+  onRestart,
+}: {
+  status: "checking" | "paid" | "unpaid" | "timeout" | "error";
+  message: string;
+  paidInfo: PaidInfo | null;
+  onRestart: () => void;
+}) {
+  if (status === "checking") {
+    return (
+      <div className="py-16 text-center">
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border-strong border-t-gold" />
+        <p className="mt-5 text-sm text-muted">Confirming your payment…</p>
+      </div>
+    );
+  }
+
+  if (status === "paid" && paidInfo) {
+    return (
+      <DoneStep
+        isEnquiry={false}
+        sessionName={paidInfo.sessionName}
+        dateLabel={paidInfo.dateLabel}
+        timeLabel={paidInfo.timeLabel}
+        locationLabel={paidInfo.locationLabel}
+        reference={paidInfo.reference}
+        manageToken={paidInfo.manageToken}
+        name={paidInfo.customerName}
+        onRestart={onRestart}
+      />
+    );
+  }
+
+  if (status === "unpaid") {
+    return (
+      <div className="py-14 text-center">
+        <h3 className="font-display text-2xl text-cream">
+          Payment wasn&rsquo;t completed
+        </h3>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+          It doesn&rsquo;t look like the payment went through, so no slot has
+          been reserved and you haven&rsquo;t been charged. You can try again
+          below.
+        </p>
+        <button
+          type="button"
+          onClick={onRestart}
+          className="mt-7 border border-border-strong px-7 py-3.5 text-[0.78rem] uppercase tracking-[0.18em] text-cream transition-colors hover:border-gold hover:text-gold"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  // "timeout" or "error" — payment likely succeeded (Stripe already
+  // processed the card) but we can't yet confirm the calendar event was
+  // created. Reassure rather than alarm, and give a direct fallback.
+  return (
+    <div className="py-14 text-center">
+      <h3 className="font-display text-2xl text-cream">
+        Payment received — finalising your booking
+      </h3>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+        Your payment went through. We&rsquo;re just taking a little longer
+        than usual to confirm the slot. You&rsquo;ll get a confirmation
+        shortly — if you don&rsquo;t hear within an hour, call{" "}
+        <a href={`tel:${site.phoneIntl}`} className="text-gold">
+          {site.phone}
+        </a>{" "}
+        or email{" "}
+        <a href={`mailto:${site.email}`} className="text-gold">
+          {site.email}
+        </a>{" "}
+        and Nick will sort it out.
+      </p>
+      {message && (
+        <p className="mx-auto mt-3 max-w-md text-xs text-faint">{message}</p>
+      )}
     </div>
   );
 }

@@ -70,16 +70,16 @@ export const site = {
   },
 } as const;
 
-/** Primary navigation — drives the header and footer. */
+/**
+ * Primary navigation — the non-service top-level links in the header.
+ * The 8 service pages (Corporate Headshots, LinkedIn Headshots, etc.) live
+ * in lib/services.ts and are rendered from there as the header's "Services"
+ * dropdown and the footer's Services column, instead of being duplicated
+ * here. Keeping them out of this flat list is what stops the desktop nav
+ * from overflowing the header — 11 top-level links plus a Book Now button
+ * don't fit in the header at any normal screen width; a dropdown does.
+ */
 export const mainNav: { label: string; href: string }[] = [
-  { label: "Corporate Headshots", href: "/corporate-headshots-sydney" },
-  { label: "LinkedIn Headshots", href: "/linkedin-headshots-sydney" },
-  { label: "Executive Portraits", href: "/executive-portraits-sydney" },
-  { label: "Personal Branding", href: "/personal-branding-sydney" },
-  { label: "Team Headshots", href: "/team-headshots-sydney" },
-  { label: "Actor Headshots", href: "/actor-headshots-sydney" },
-  { label: "Corporate Events", href: "/corporate-event-photographer-sydney" },
-  { label: "Family Sessions", href: "/family-photography-sydney" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },

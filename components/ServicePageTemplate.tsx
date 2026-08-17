@@ -5,6 +5,7 @@ import { getService } from "@/lib/services";
 import { getImage, getImages, pickImages } from "@/lib/images";
 import { serviceGalleries } from "@/lib/galleries";
 import { site, absoluteUrl } from "@/lib/site";
+import { bookingHref } from "@/lib/booking";
 import {
   serviceSchema,
   faqSchema,
@@ -62,7 +63,9 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
               {service.intro[0]}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href={site.bookingUrl}>Check Availability</Button>
+              <Button href={bookingHref(service.bookingSessionId)}>
+                Check Availability
+              </Button>
               <Button href="/contact" variant="outline">
                 Ask a Question
               </Button>
@@ -228,7 +231,7 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
         </section>
       ) : null}
 
-      <CTASection />
+      <CTASection sessionId={service.bookingSessionId} />
     </>
   );
 }

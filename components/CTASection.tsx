@@ -1,4 +1,5 @@
 import { site } from "@/lib/site";
+import { bookingHref } from "@/lib/booking";
 import Button from "./Button";
 import { Container } from "./Section";
 
@@ -6,9 +7,15 @@ import { Container } from "./Section";
 export default function CTASection({
   title = "Ready to book your session?",
   text = "Check live availability and secure your shoot in under a minute. Studio in Lane Cove or on-site anywhere across Sydney.",
+  sessionId,
 }: {
   title?: string;
   text?: string;
+  /**
+   * Session to preselect — service pages pass their own so the client lands on
+   * the session they were reading about. Omit on general pages.
+   */
+  sessionId?: string;
 }) {
   return (
     <section className="section bg-ink-2">
@@ -22,7 +29,7 @@ export default function CTASection({
             {text}
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button href={site.bookingUrl} variant="gold">
+            <Button href={bookingHref(sessionId)} variant="gold">
               Check Availability
             </Button>
             <Button href={`tel:${site.phoneIntl}`} variant="outline">

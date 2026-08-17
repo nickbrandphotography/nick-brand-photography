@@ -162,6 +162,24 @@ export const sessionTypes: SessionType[] = [
     ],
   },
   {
+    id: "band-artist",
+    name: "Band & Artist Session",
+    category: "Portfolio",
+    durationMin: 180,
+    price: 995,
+    depositPct: 0,
+    mode: "enquiry",
+    allowsOnLocation: true,
+    blurb:
+      "A three-hour location shoot for bands and solo artists — press kit, social formats, group and individual shots.",
+    includes: [
+      "Up to 6 band members",
+      "2 Sydney locations",
+      "30 fully edited images",
+      "Press kit + social formats",
+    ],
+  },
+  {
     id: "team-quote",
     name: "Team Headshots & Corporate Projects",
     category: "Teams & Events",
@@ -181,6 +199,26 @@ export const sessionTypes: SessionType[] = [
 
 export function getSessionType(id: string): SessionType | undefined {
   return sessionTypes.find((s) => s.id === id);
+}
+
+/**
+ * The URL a "Book"/"Check Availability" button should point at.
+ *
+ * Pass the session the client is looking at and the booking flow opens on it,
+ * instead of the generic picker — which leads with corporate headshots and so
+ * looks like a bounce back to the wrong service. An unknown or missing id
+ * degrades to the plain picker rather than a broken link, so a typo can never
+ * take a booking page down.
+ *
+ * Every booking CTA on the site should build its href with this: the hero and
+ * closing band on service pages (components/ServicePageTemplate.tsx,
+ * components/CTASection.tsx) and the pricing cards
+ * (components/PricingCards.tsx). Header, footer and homepage links stay
+ * generic on purpose — they aren't about one service.
+ */
+export function bookingHref(sessionId?: string): string {
+  if (!sessionId || !getSessionType(sessionId)) return "/book#book";
+  return `/book?session=${encodeURIComponent(sessionId)}#book`;
 }
 
 /* ------------------------------------------------------------------------ */

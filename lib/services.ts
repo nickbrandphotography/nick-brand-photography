@@ -34,6 +34,14 @@ export type Service = {
   galleryCount: number;
   /** key into pricingGroups (lib/pricing.ts), optional */
   pricingGroupKey?: "corporate" | "branding" | "portrait";
+  /**
+   * The session this page's own CTAs should open — an `id` from `sessionTypes`
+   * in lib/booking.ts. Without it, "Check Availability" lands on the generic
+   * picker, which leads with corporate headshots: a family or branding visitor
+   * appears to be bounced back to a service they weren't looking at.
+   * Clients can still switch via "← Change session" in the flow.
+   */
+  bookingSessionId?: string;
   faqs: FAQ[];
   /** related service slugs for internal linking */
   related: string[];
@@ -54,6 +62,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "corporate-headshots-sydney",
+    bookingSessionId: "headshot-professional",
     navLabel: "Corporate Headshots",
     metaTitle: "Corporate Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -147,6 +156,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "linkedin-headshots-sydney",
+    bookingSessionId: "headshot-essential",
     navLabel: "LinkedIn Headshots",
     metaTitle: "LinkedIn Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -235,6 +245,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "executive-portraits-sydney",
+    bookingSessionId: "headshot-professional",
     navLabel: "Executive Portraits",
     metaTitle: "Executive Portraits Sydney | Nick Brand Photography",
     metaDescription:
@@ -323,6 +334,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "team-headshots-sydney",
+    bookingSessionId: "team-quote",
     navLabel: "Team Headshots",
     metaTitle: "Team & Office Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -411,6 +423,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "personal-branding-sydney",
+    bookingSessionId: "brand-starter",
     navLabel: "Personal Branding",
     metaTitle:
       "Personal Branding Photographer Sydney | Nick Brand Photography",
@@ -500,6 +513,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "actor-headshots-sydney",
+    bookingSessionId: "portfolio",
     navLabel: "Actor Headshots",
     metaTitle: "Actor Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -588,6 +602,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "corporate-event-photographer-sydney",
+    bookingSessionId: "team-quote",
     navLabel: "Corporate Events",
     metaTitle:
       "Corporate Event Photographer Sydney | Nick Brand Photography",
@@ -676,6 +691,7 @@ export const services: Service[] = [
   /* ----------------------------------------------------------------------- */
   {
     slug: "family-photography-sydney",
+    bookingSessionId: "family",
     navLabel: "Family Sessions",
     metaTitle: "Family Photographer Sydney | Nick Brand Photography",
     metaDescription:

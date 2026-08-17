@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { pricingGroups } from "@/lib/pricing";
-import { site } from "@/lib/site";
+import { bookingHref } from "@/lib/booking";
 import { Container, SectionHeading } from "./Section";
 
 /** Three-column pricing cards for a service line. */
@@ -76,11 +76,7 @@ export default function PricingCards({
               </ul>
 
               <Link
-                href={
-                  tier.sessionTypeId
-                    ? `${site.bookingUrl}?session=${tier.sessionTypeId}#book`
-                    : `${site.bookingUrl}#book`
-                }
+                href={bookingHref(tier.sessionTypeId)}
                 className={`mt-8 inline-flex items-center justify-center px-6 py-3.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] transition-colors ${
                   tier.highlight
                     ? "bg-gold text-ink hover:bg-gold-soft"

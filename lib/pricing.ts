@@ -195,6 +195,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Creative direction included",
         ],
         ctaLabel: "Book Band Session",
+        sessionTypeId: "band-artist",
       },
     ],
   },

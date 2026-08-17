@@ -39,7 +39,7 @@ export const sessionTypes: SessionType[] = [
   {
     id: "headshot-essential",
     name: "Corporate Headshot — Essential",
-    category: "Headshots",
+    category: "Corporate Headshots",
     durationMin: 45,
     price: 395,
     depositPct: 0.2,
@@ -57,7 +57,7 @@ export const sessionTypes: SessionType[] = [
   {
     id: "headshot-professional",
     name: "Corporate Headshot — Professional",
-    category: "Headshots",
+    category: "Corporate Headshots",
     durationMin: 90,
     price: 695,
     depositPct: 0.2,
@@ -130,7 +130,7 @@ export const sessionTypes: SessionType[] = [
   {
     id: "portfolio",
     name: "Actor & Model Portfolio",
-    category: "Portfolio",
+    category: "Actors & Models",
     durationMin: 120,
     price: 750,
     depositPct: 0.2,
@@ -147,7 +147,7 @@ export const sessionTypes: SessionType[] = [
   {
     id: "family",
     name: "Family Session",
-    category: "Portrait",
+    category: "Family Sessions",
     durationMin: 90,
     price: 550,
     depositPct: 0.2,
@@ -164,7 +164,7 @@ export const sessionTypes: SessionType[] = [
   {
     id: "band-artist",
     name: "Band & Artist Session",
-    category: "Portfolio",
+    category: "Music & Bands",
     durationMin: 180,
     price: 995,
     depositPct: 0,
@@ -199,6 +199,53 @@ export const sessionTypes: SessionType[] = [
 
 export function getSessionType(id: string): SessionType | undefined {
   return sessionTypes.find((s) => s.id === id);
+}
+
+/**
+ * The order session categories appear in the booking picker.
+ *
+ * Each service line gets its own headed section — a family session must never
+ * sit under a corporate heading, and vice versa. Corporate headshots lead
+ * because they're the primary service; the smaller lines follow in their own
+ * right rather than being folded into someone else's category.
+ */
+export const sessionCategoryOrder = [
+  "Corporate Headshots",
+  "Personal Branding",
+  "Teams & Events",
+  "Actors & Models",
+  "Music & Bands",
+  "Family Sessions",
+] as const;
+
+export type SessionCategoryGroup = {
+  category: string;
+  sessions: SessionType[];
+};
+
+/**
+ * `sessionTypes` grouped for display, in `sessionCategoryOrder`.
+ *
+ * A session whose category isn't in that list still gets its own group at the
+ * end rather than disappearing — adding a session type can never silently drop
+ * it from the picker.
+ */
+export function groupedSessionTypes(): SessionCategoryGroup[] {
+  const ordered: SessionCategoryGroup[] = sessionCategoryOrder
+    .map((category) => ({
+      category: category as string,
+      sessions: sessionTypes.filter((s) => s.category === category),
+    }))
+    .filter((g) => g.sessions.length > 0);
+
+  const known: Set<string> = new Set(sessionCategoryOrder);
+  for (const s of sessionTypes) {
+    if (known.has(s.category)) continue;
+    const existing = ordered.find((g) => g.category === s.category);
+    if (existing) existing.sessions.push(s);
+    else ordered.push({ category: s.category, sessions: [s] });
+  }
+  return ordered;
 }
 
 /**

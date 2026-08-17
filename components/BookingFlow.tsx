@@ -20,7 +20,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import {
-  sessionTypes,
+  groupedSessionTypes,
   getSessionType,
   isBookable,
   startOfToday,
@@ -607,78 +607,97 @@ function ServiceStep({
         What would you like to book?
       </h3>
       <p className="mt-2 text-sm text-muted">
-        Choose a session to see live availability. Teams and events route to a
-        quick quote.
+        Choose a session to see live availability. Teams, events and full-day
+        shoots route to a quick quote.
       </p>
 
-      <div className="mt-7 grid gap-4 sm:grid-cols-2">
-        {sessionTypes.map((s) => {
-          const isSelected = s.id === selectedId;
-          return (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => onChoose(s)}
-              className={`group flex flex-col border p-6 text-left transition-colors ${
-                isSelected
-                  ? "border-gold bg-surface-2"
-                  : "border-border bg-ink-2 hover:border-gold/60"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span className="eyebrow">{s.category}</span>
-                {s.popular && (
-                  <span className="rounded-full bg-gold px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-ink">
-                    Most popular
-                  </span>
-                )}
-              </div>
-              <h4 className="font-display mt-3 text-xl leading-snug text-cream">
-                {s.name}
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                {s.blurb}
-              </p>
-              <ul className="mt-4 space-y-1.5">
-                {s.includes.map((inc) => (
-                  <li
-                    key={inc}
-                    className="flex items-start gap-2 text-[0.83rem] text-faint"
-                  >
-                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold" />
-                    {inc}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-                <span className="text-sm text-cream">
-                  {s.mode === "enquiry" && s.price <= 0 ? (
-                    "Custom quote"
-                  ) : (
-                    <>
-                      <span className="font-display text-lg text-gold">
-                        {s.mode === "enquiry" ? `From ${AUD(s.price)}` : AUD(s.price)}
+      {/* One headed section per service line. Grouping is deliberate: a family
+          or band session must never read as though it sits under corporate
+          headshots. Order comes from sessionCategoryOrder in lib/booking.ts. */}
+      {groupedSessionTypes().map((group) => (
+        <section key={group.category} className="mt-10 first:mt-7">
+          <div className="flex items-center gap-4">
+            <h4 className="font-display text-lg text-cream">
+              {group.category}
+            </h4>
+            <span className="h-px flex-1 bg-border" aria-hidden />
+          </div>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {group.sessions.map((s) => {
+              const isSelected = s.id === selectedId;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => onChoose(s)}
+                  className={`group flex flex-col border p-6 text-left transition-colors ${
+                    isSelected
+                      ? "border-gold bg-surface-2"
+                      : "border-border bg-ink-2 hover:border-gold/60"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="eyebrow">
+                      {s.mode === "enquiry" ? "By enquiry" : "Book online"}
+                    </span>
+                    {s.popular && (
+                      <span className="rounded-full bg-gold px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-ink">
+                        Most popular
                       </span>
-                      <span className="text-faint">
-                        {" "}
-                        · {formatDuration(s.durationMin)}
-                      </span>
-                    </>
+                    )}
+                  </div>
+                  <h5 className="font-display mt-3 text-xl leading-snug text-cream">
+                    {s.name}
+                  </h5>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {s.blurb}
+                  </p>
+                  <ul className="mt-4 space-y-1.5">
+                    {s.includes.map((inc) => (
+                      <li
+                        key={inc}
+                        className="flex items-start gap-2 text-[0.83rem] text-faint"
+                      >
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold" />
+                        {inc}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                    <span className="text-sm text-cream">
+                      {s.mode === "enquiry" && s.price <= 0 ? (
+                        "Custom quote"
+                      ) : (
+                        <>
+                          <span className="font-display text-lg text-gold">
+                            {s.mode === "enquiry"
+                              ? `From ${AUD(s.price)}`
+                              : AUD(s.price)}
+                          </span>
+                          <span className="text-faint">
+                            {" "}
+                            · {formatDuration(s.durationMin)}
+                          </span>
+                        </>
+                      )}
+                    </span>
+                    <span className="text-[0.72rem] uppercase tracking-[0.16em] text-gold transition-transform group-hover:translate-x-1">
+                      {s.mode === "enquiry" ? "Enquire →" : "Select →"}
+                    </span>
+                  </div>
+                  {s.allowsOnLocation && (
+                    <p className="mt-3 text-[0.74rem] text-faint">
+                      Studio, or on-location at your workplace (travel fee
+                      added).
+                    </p>
                   )}
-                </span>
-                <span className="text-[0.72rem] uppercase tracking-[0.16em] text-gold transition-transform group-hover:translate-x-1">
-                  {s.mode === "enquiry" ? "Enquire →" : "Select →"}
-                </span>
-              </div>
-              {s.allowsOnLocation && (
-                <p className="mt-3 text-[0.74rem] text-faint">
-                  Studio, or on-location at your workplace (travel fee added).
-                </p>
-              )}
-            </button>
-          );
-        })}
-      </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import type { Service } from "@/lib/services";
 import { getService } from "@/lib/services";
 import { getImage, getImages, pickImages } from "@/lib/images";
 import { serviceGalleries } from "@/lib/galleries";
-import { site, absoluteUrl } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
 import { bookingHref } from "@/lib/booking";
 import {
   serviceSchema,

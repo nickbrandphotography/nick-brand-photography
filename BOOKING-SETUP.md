@@ -48,13 +48,18 @@ from the secure link in their confirmation email.
 | The full booking UI / flow / design | **Real** — production code |
 | Mobile-responsive layout | **Real** |
 | Session types & pricing | **Real** (from `lib/booking.ts`, mirrors `lib/pricing.ts`) |
-| Calendar availability | **Mock** — generated locally, deterministic |
-| Saving the booking | **Mock** — not yet stored anywhere |
-| Google Calendar sync | **Not yet connected** |
-| Payments (Stripe) | **Not yet connected** |
-| Confirmation emails / SMS | **Not yet connected** |
+| Calendar availability | **Real** when the Google env vars are set — falls back to deterministic mock if they're missing or the API errors |
+| Google Calendar sync | **Connected** — writes the event, reads free/busy for availability |
+| Payments (Stripe) | **Connected** — deposit taken via Stripe Checkout before the slot is reserved |
+| Saving the booking | **The calendar event is the record.** No database yet (Phase A) |
+| Enquiry submissions (team + branding quotes) | **Real** — emailed via Web3Forms, same key as the contact form |
+| Confirmation email + `.ics` invite | **Built, needs `RESEND_API_KEY`** — see Phase E |
+| Reminders / SMS | **Not yet connected** |
+| Reschedule & cancel page (`/manage/<token>`) | **Mock** — shows a sample booking; the page says so |
 
-The preview is honest about this — the confirmation screen says so.
+Availability, opening hours and session lengths all come from `OPENING_HOURS`
+and `sessionTypes` in `lib/booking.ts` — the mock engine and the real Google
+Calendar engine read the same constants, so hours only need changing once.
 
 ---
 
@@ -120,7 +125,29 @@ only becomes `confirmed` once payment succeeds.
 
 ### Phase E — Confirmations & reminders
 
-Add email (Resend) and SMS (Twilio) for confirmations, reminders, prep guides
+Confirmation email is **built** (2026-08-17) and waits only on an API key.
+`lib/email.ts` sends the client a confirmation with an `.ics` calendar invite
+attached, plus an internal copy to the studio, from the Stripe webhook once the
+calendar event exists. To switch it on:
+
+1. Create a free account at [resend.com] and verify the sending domain
+   `nickbrandphotography.com` using the DNS records Resend gives you.
+2. In Vercel → Settings → Environment Variables add:
+   - `RESEND_API_KEY` = `re_...` (mark **Sensitive**)
+   - `EMAIL_FROM` = `Nick Brand Photography <studio@nickbrandphotography.com>`
+     (optional — this is the default)
+3. **Redeploy.** Env var changes do nothing until a redeploy.
+
+Until the key is set, no email is sent, nothing errors, and the confirmation
+screen tells the client their details are on screen instead of promising an
+email. Once the key is set the screen switches to promising the email
+automatically — it reads the `emailSent` flag the webhook stamps on the Stripe
+session.
+
+Before pointing it at a real client, note Resend only accepts sends to your own
+account address until the domain is verified.
+
+Still to do in this phase: SMS (Twilio), reminders the day before, prep guides
 and post-shoot follow-ups.
 
 ---

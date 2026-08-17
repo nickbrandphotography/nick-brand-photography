@@ -60,6 +60,9 @@ export async function GET(req: NextRequest) {
       depositAud: Number(md.depositAud ?? 0),
       totalAud: Number(md.totalAud ?? 0),
       customerName: md.customerName ?? "",
+      // Stamped by the webhook (lib/booking-fulfillment.ts) — lets the
+      // confirmation screen promise an email only when one was really sent.
+      emailSent: md.emailSent === "1",
     });
   } catch (err) {
     const raw = err instanceof Error ? err.message : "Unknown error";

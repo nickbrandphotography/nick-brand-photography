@@ -51,6 +51,8 @@ type PaidInfo = {
   depositAud: number;
   totalAud: number;
   customerName: string;
+  /** Whether a confirmation email actually went out — see lib/email.ts. */
+  emailSent: boolean;
 };
 type LocationMode = "studio" | "onlocation";
 
@@ -74,13 +76,42 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const AUD = (n: number) => `$${n.toLocaleString("en-AU")}`;
 
+/** "45 min" / "1.5 hours" / "3 hours" — half-day sessions read badly in minutes. */
+function formatDuration(min: number): string {
+  if (min < 120) return `${min} min`;
+  const hours = min / 60;
+  const label = Number.isInteger(hours) ? `${hours}` : hours.toFixed(1);
+  return `${label} hours`;
+}
+
 /* ------------------------------------------------------------------------ */
 
-export default function BookingFlow() {
+export default function BookingFlow({
+  initialSessionId,
+}: {
+  /**
+   * Optional session to open on, from /book?session=<id> — used by the pricing
+   * card CTAs so "Book Full Day" lands on that session instead of the generic
+   * picker. An unknown id is ignored and the picker is shown as normal.
+   */
+  initialSessionId?: string;
+} = {}) {
   const today = useMemo(() => startOfToday(), []);
 
-  const [step, setStep] = useState<Step>("service");
-  const [serviceId, setServiceId] = useState<string | null>(null);
+  const preselected = initialSessionId
+    ? getSessionType(initialSessionId)
+    : undefined;
+
+  const [step, setStep] = useState<Step>(
+    preselected
+      ? preselected.mode === "enquiry"
+        ? "enquiry"
+        : "datetime"
+      : "service",
+  );
+  const [serviceId, setServiceId] = useState<string | null>(
+    preselected?.id ?? null,
+  );
   const [viewMonth, setViewMonth] = useState<Date>(
     new Date(today.getFullYear(), today.getMonth(), 1),
   );
@@ -156,6 +187,7 @@ export default function BookingFlow() {
             depositAud: json.depositAud,
             totalAud: json.totalAud,
             customerName: json.customerName,
+            emailSent: Boolean(json.emailSent),
           });
           setResumeStatus("paid");
           return;
@@ -326,7 +358,56 @@ export default function BookingFlow() {
       }
     }
 
-    // Enquiry path — no payment involved; no booking record created yet.
+    // Enquiry path — no payment and no calendar slot; the brief is emailed to
+    // Nick through Web3Forms (the same delivery the contact form uses, keyed
+    // by site.web3formsKey). If that POST fails we must NOT show the success
+    // screen — an enquiry that silently vanishes is a lost job.
+    if (!site.web3formsKey.trim()) {
+      setSubmitError(
+        `Online enquiries aren't set up yet. Please call ${site.phone} or email ${site.email} and Nick will get straight back to you.`,
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: site.web3formsKey,
+          subject: `Booking enquiry — ${service?.name ?? "session"}`,
+          from_name: form.name,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          session_type: service?.name ?? "",
+          indicative_price:
+            service && service.price > 0 ? `From ${AUD(service.price)}` : "Quote",
+          message: form.note,
+          botcheck: false,
+        }),
+      });
+      const json: { success?: boolean } = await res.json();
+      if (!res.ok || !json.success) {
+        setSubmitError(
+          `We couldn't send your enquiry. Please call ${site.phone} or email ${site.email} — Nick will sort it out directly.`,
+        );
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      setSubmitError(
+        `We couldn't reach the enquiry server. Check your connection, or call ${site.phone}.`,
+      );
+      setSubmitting(false);
+      return;
+    }
+
     setReference("");
     setManageToken("");
     setSubmitting(false);
@@ -571,14 +652,17 @@ function ServiceStep({
               </ul>
               <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
                 <span className="text-sm text-cream">
-                  {s.mode === "enquiry" ? (
+                  {s.mode === "enquiry" && s.price <= 0 ? (
                     "Custom quote"
                   ) : (
                     <>
                       <span className="font-display text-lg text-gold">
-                        {AUD(s.price)}
+                        {s.mode === "enquiry" ? `From ${AUD(s.price)}` : AUD(s.price)}
                       </span>
-                      <span className="text-faint"> · {s.durationMin} min</span>
+                      <span className="text-faint">
+                        {" "}
+                        · {formatDuration(s.durationMin)}
+                      </span>
                     </>
                   )}
                 </span>
@@ -690,8 +774,8 @@ function DateTimeStep({
         Pick a date, time &amp; place
       </h3>
       <p className="mt-2 text-sm text-muted">
-        {service.name} · {service.durationMin} minutes. Every slot shown is open
-        right now.
+        {service.name} · {formatDuration(service.durationMin)}. Every slot shown
+        is open right now.
       </p>
 
       {/* Location choice (on-location-capable sessions only) */}
@@ -1075,7 +1159,7 @@ function DetailsStep({
             <SummaryRow label="Time" value={slot.label} />
             <SummaryRow
               label="Duration"
-              value={`${service.durationMin} minutes`}
+              value={formatDuration(service.durationMin)}
             />
             <SummaryRow label="Location" value={locationLabel} />
           </dl>
@@ -1248,6 +1332,7 @@ function DoneStep({
   manageToken,
   name,
   onRestart,
+  emailSent = false,
 }: {
   isEnquiry: boolean;
   sessionName: string;
@@ -1258,6 +1343,8 @@ function DoneStep({
   manageToken: string;
   name: string;
   onRestart: () => void;
+  /** Paid bookings only — whether the confirmation email really went out. */
+  emailSent?: boolean;
 }) {
   const firstName = name.trim().split(/\s+/)[0] || "there";
 
@@ -1278,8 +1365,19 @@ function DoneStep({
         ) : (
           <>
             Thanks {firstName} — your deposit is paid and the slot is reserved.
-            A confirmation email with calendar invite and prep notes is on its
-            way.
+            {emailSent ? (
+              <>
+                {" "}
+                A confirmation email with your calendar invite and prep notes is
+                on its way.
+              </>
+            ) : (
+              <>
+                {" "}
+                Your booking details are below — take a copy, and Nick will be
+                in touch before the day with prep notes.
+              </>
+            )}
           </>
         )}
       </p>
@@ -1371,6 +1469,7 @@ function ResumingStep({
         reference={paidInfo.reference}
         manageToken={paidInfo.manageToken}
         name={paidInfo.customerName}
+        emailSent={paidInfo.emailSent}
         onRestart={onRestart}
       />
     );

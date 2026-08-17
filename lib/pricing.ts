@@ -12,6 +12,14 @@ export type PricingTier = {
   features: string[];
   ctaLabel: string;
   highlight?: boolean;
+  /**
+   * Matching `id` in the `sessionTypes` array in lib/booking.ts. When set, this
+   * tier's CTA deep-links to /book?session=<id> and the booking flow opens with
+   * that session already chosen. Leave undefined only if there is deliberately
+   * no bookable session for the tier — the CTA then falls back to the generic
+   * /book picker.
+   */
+  sessionTypeId?: string;
 };
 
 export type PricingGroup = {
@@ -39,6 +47,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "48hr express available (+$80)",
         ],
         ctaLabel: "Book Essential",
+        sessionTypeId: "headshot-essential",
       },
       {
         name: "Professional",
@@ -56,6 +65,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Priority turnaround (3 days)",
         ],
         ctaLabel: "Book Professional",
+        sessionTypeId: "headshot-professional",
       },
       {
         name: "Team Package",
@@ -71,6 +81,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Invoice billing available",
         ],
         ctaLabel: "Enquire for Teams",
+        sessionTypeId: "team-quote",
       },
     ],
   },
@@ -93,6 +104,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Social media sizing included",
         ],
         ctaLabel: "Book Starter",
+        sessionTypeId: "brand-starter",
       },
       {
         name: "Brand Full Day",
@@ -110,6 +122,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Usage rights — all platforms",
         ],
         ctaLabel: "Book Full Day",
+        sessionTypeId: "brand-full-day",
       },
       {
         name: "Brand Premium",
@@ -125,6 +138,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Priority ongoing rate locked in",
         ],
         ctaLabel: "Book Premium",
+        sessionTypeId: "brand-premium",
       },
     ],
   },
@@ -147,6 +161,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Pets welcome",
         ],
         ctaLabel: "Book Family",
+        sessionTypeId: "family",
       },
       {
         name: "Portfolio Build",
@@ -164,6 +179,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Rush 24hr available",
         ],
         ctaLabel: "Book Portfolio",
+        sessionTypeId: "portfolio",
       },
       {
         name: "Band & Artist",

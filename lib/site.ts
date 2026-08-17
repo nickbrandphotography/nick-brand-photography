@@ -41,7 +41,7 @@ export const site = {
   },
   geo: { lat: -33.8146, lng: 151.1696 },
   serviceArea: "Greater Sydney",
-  hours: "07:00–19:00, 7 days",
+  hours: "07:00–19:00, Monday to Saturday",
 
   // Trust signals
   stats: {

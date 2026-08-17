@@ -76,7 +76,11 @@ export default function PricingCards({
               </ul>
 
               <Link
-                href={site.bookingUrl}
+                href={
+                  tier.sessionTypeId
+                    ? `${site.bookingUrl}?session=${tier.sessionTypeId}#book`
+                    : `${site.bookingUrl}#book`
+                }
                 className={`mt-8 inline-flex items-center justify-center px-6 py-3.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] transition-colors ${
                   tier.highlight
                     ? "bg-gold text-ink hover:bg-gold-soft"

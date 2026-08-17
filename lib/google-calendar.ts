@@ -114,7 +114,7 @@ function sydneyOffsetMs(at: Date): number {
 }
 
 /** The UTC instant corresponding to a Sydney wall-clock time. */
-function sydneyInstant(
+export function sydneyInstant(
   y: number,
   mo: number, // 1-based month
   d: number,

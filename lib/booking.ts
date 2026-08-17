@@ -74,6 +74,60 @@ export const sessionTypes: SessionType[] = [
     ],
   },
   {
+    id: "brand-starter",
+    name: "Personal Branding — Brand Starter",
+    category: "Personal Branding",
+    durationMin: 180,
+    price: 895,
+    depositPct: 0.2,
+    mode: "instant",
+    allowsOnLocation: true,
+    blurb:
+      "A half-day branding shoot building a mixed library of headshots and lifestyle images at one location.",
+    includes: [
+      "One location — studio or your own",
+      "2–3 outfit changes",
+      "20 fully edited images",
+      "Social media sizing included",
+    ],
+  },
+  {
+    id: "brand-full-day",
+    name: "Personal Branding — Brand Full Day",
+    category: "Personal Branding",
+    durationMin: 360,
+    price: 1695,
+    depositPct: 0,
+    mode: "enquiry",
+    allowsOnLocation: true,
+    blurb:
+      "A full day across two to three Sydney locations, with a pre-shoot strategy session and full usage rights.",
+    includes: [
+      "2–3 locations across Sydney",
+      "5+ outfit / look changes",
+      "50 fully edited images",
+      "Pre-shoot strategy session",
+    ],
+  },
+  {
+    id: "brand-premium",
+    name: "Personal Branding — Brand Premium",
+    category: "Personal Branding",
+    durationMin: 360,
+    price: 2800,
+    depositPct: 0,
+    mode: "enquiry",
+    allowsOnLocation: true,
+    blurb:
+      "The full day plus hair and makeup, wardrobe direction and a 30-day image refresh option.",
+    includes: [
+      "Everything in Brand Full Day",
+      "Hair & makeup artist included",
+      "75+ fully edited images",
+      "30-day image refresh option",
+    ],
+  },
+  {
     id: "portfolio",
     name: "Actor & Model Portfolio",
     category: "Portfolio",
@@ -220,12 +274,12 @@ export function findTravelZone(postcode: number): TravelZone | null {
 /** Opening hours per weekday (0 = Sunday). null = closed. [openHour, closeHour] */
 export const OPENING_HOURS: Record<number, [number, number] | null> = {
   0: null, // Sunday — closed
-  1: [8, 17],
-  2: [8, 17],
-  3: [8, 17],
-  4: [8, 17],
-  5: [8, 17],
-  6: [9, 14], // Saturday — shorter
+  1: [7, 19],
+  2: [7, 19],
+  3: [7, 19],
+  4: [7, 19],
+  5: [7, 19],
+  6: [7, 19], // Saturday — same as weekdays
 };
 
 /** Earliest a client can book (lead time) and how far ahead (horizon). */

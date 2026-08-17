@@ -21,6 +21,7 @@
 
 import { getStripe } from "./stripe";
 import { createBookingEvent } from "./google-calendar";
+import { sendBookingConfirmation } from "./email";
 
 export type FulfillmentResult =
   | {
@@ -34,6 +35,13 @@ export type FulfillmentResult =
       depositAud: number;
       totalAud: number;
       customerName: string;
+      /**
+       * Whether the confirmation email to the client was accepted by Resend.
+       * False when email isn't configured yet (see lib/email.ts) or the send
+       * failed — the confirmation screen tells the client the truth either way
+       * instead of promising an email that never arrives.
+       */
+      emailSent: boolean;
     }
   | { status: "unpaid" }
   | { status: "error"; message: string };
@@ -80,6 +88,7 @@ export async function fulfillCheckoutSession(
       depositAud,
       totalAud,
       customerName: metaStr(md, "customerName"),
+      emailSent: md.emailSent === "1",
     };
   }
 
@@ -117,10 +126,33 @@ export async function fulfillCheckoutSession(
       depositAud,
     });
 
+    // Confirmation email + .ics invite. Deliberately AFTER the calendar
+    // event: the booking is real whether or not email is configured, and
+    // sendBookingConfirmation never throws, so a mail failure can't lose a
+    // paid booking. Its result is recorded so the confirmation screen can
+    // avoid promising an email that was never sent.
+    const emailSent = await sendBookingConfirmation({
+      reference,
+      sessionName: metaStr(md, "sessionName"),
+      customerName: metaStr(md, "customerName"),
+      customerEmail: metaStr(md, "customerEmail"),
+      date: metaStr(md, "date", "1970-01-01"),
+      hour: Number(md.hour ?? 0),
+      minute: Number(md.minute ?? 0),
+      durationMin: Number(md.durationMin ?? 0),
+      dateLabel: metaStr(md, "dateLabel"),
+      timeLabel: metaStr(md, "timeLabel"),
+      locationLabel: metaStr(md, "locationLabel"),
+      depositAud,
+      totalAud,
+      manageToken: eventId,
+      note: metaStr(md, "note") || undefined,
+    });
+
     // Stamp the event ID back onto the session so re-delivered webhooks
     // (or a client status poll that arrives after this) see it's done.
     await stripe.checkout.sessions.update(checkoutSessionId, {
-      metadata: { ...md, calendarEventId: eventId },
+      metadata: { ...md, calendarEventId: eventId, emailSent: emailSent ? "1" : "0" },
     });
 
     return {
@@ -134,6 +166,7 @@ export async function fulfillCheckoutSession(
       depositAud,
       totalAud,
       customerName: metaStr(md, "customerName"),
+      emailSent,
     };
   } catch (err) {
     const raw = err instanceof Error ? err.message : "Unknown calendar error";

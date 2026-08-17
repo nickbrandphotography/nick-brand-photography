@@ -85,7 +85,19 @@ const bookingFaqs = [
   },
 ];
 
-export default function BookPage() {
+/**
+ * `?session=<id>` preselects a session in the booking flow — the pricing card
+ * CTAs on the service pages use it (see sessionTypeId in lib/pricing.ts).
+ * In Next 16 `searchParams` is a Promise, so the page is async.
+ */
+export default async function BookPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session?: string | string[] }>;
+}) {
+  const { session } = await searchParams;
+  const initialSessionId = Array.isArray(session) ? session[0] : session;
+
   return (
     <>
       <JsonLd data={[breadcrumbSchema(crumbs), faqSchema(bookingFaqs)]} />
@@ -151,7 +163,7 @@ export default function BookPage() {
             lead="Pick a session and reserve your slot in under a minute. Availability is live — every time shown is genuinely open."
           />
           <div className="mt-10">
-            <BookingFlow />
+            <BookingFlow initialSessionId={initialSessionId} />
           </div>
           <p className="mt-6 text-center text-sm text-faint">
             Prefer to talk it through first? Call{" "}

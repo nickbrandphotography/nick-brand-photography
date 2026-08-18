@@ -265,7 +265,11 @@ export async function createBookingEvent(
     `Location: ${data.location}`,
     data.note ? `Notes: ${data.note}` : null,
     `Total: $${data.totalAud} AUD`,
-    `Deposit: $${data.depositAud} AUD`,
+    // Deposits are currently off (see depositPct in lib/booking.ts), so say
+    // what's actually owed rather than printing "Deposit: $0 AUD".
+    data.depositAud > 0
+      ? `Deposit paid: $${data.depositAud} AUD (balance $${data.totalAud - data.depositAud} on the day)`
+      : `Payment: $${data.totalAud} AUD due on the day — no deposit taken`,
   ]
     .filter(Boolean)
     .join("\n");

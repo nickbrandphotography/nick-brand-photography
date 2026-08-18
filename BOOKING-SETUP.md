@@ -50,7 +50,8 @@ from the secure link in their confirmation email.
 | Session types & pricing | **Real** (from `lib/booking.ts`, mirrors `lib/pricing.ts`) |
 | Calendar availability | **Real** when the Google env vars are set — falls back to deterministic mock if they're missing or the API errors |
 | Google Calendar sync | **Connected** — writes the event, reads free/busy for availability |
-| Payments (Stripe) | **Connected** — deposit taken via Stripe Checkout before the slot is reserved |
+| Payments (Stripe) | **Off** — deposits removed 2026-08-17. `STRIPE_SECRET_KEY` was never set in Vercel, so every online booking failed with "payment system not set up". Bookings now confirm with no payment and the full fee is settled on the day. The Stripe route and webhook remain in the repo, unused |
+| Abuse protection on booking | **Real** — honeypot, per-IP rate limit (4/hour, best-effort in-memory), slot re-checked against Google Calendar before writing |
 | Saving the booking | **The calendar event is the record.** No database yet (Phase A) |
 | Enquiry submissions (team + branding quotes) | **Real** — emailed via Web3Forms, same key as the contact form |
 | Confirmation email + `.ics` invite | **Built, needs `RESEND_API_KEY`** — see Phase E |
@@ -118,10 +119,28 @@ with calls to a new `/api/availability` route that reads `availability_rules`,
    personal busy blocks back so they hide slots. (Full logic is in the
    blueprint document, section 8.)
 
-### Phase D — Payments (Stripe)
+### Phase D — Payments (Stripe) — currently switched off
 
-Connect Stripe so the "Confirm booking" button takes the deposit. The booking
-only becomes `confirmed` once payment succeeds.
+Deposits are off as of 2026-08-17. Bookings are written directly by
+`app/api/bookings/route.ts` and clients pay on the day.
+
+To turn deposits back on:
+
+1. Add `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` in Vercel and redeploy.
+2. Give the instant session types a non-zero `depositPct` in `lib/booking.ts`
+   (they were all `0.2` before).
+3. In `components/BookingFlow.tsx`, point the instant submit back at
+   `/api/checkout` and restore the redirect to `json.url`.
+
+The Stripe route, its webhook and `lib/booking-fulfillment.ts` were left intact
+and still work — nothing needs rebuilding. The booking flow's deposit copy is
+already conditional on `depositPct`, so the deposit rows and "Continue to
+payment" button reappear on their own.
+
+**Trade-off to be aware of while deposits are off:** anyone can hold a slot
+without paying, so no-shows cost a session slot rather than a forfeited
+deposit. The safeguards in the booking route limit casual abuse but can't
+replace a deposit.
 
 ### Phase E — Confirmations & reminders
 

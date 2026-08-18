@@ -135,6 +135,12 @@ export default function BookingFlow({
   const [submitError, setSubmitError] = useState<string>("");
   const [reference, setReference] = useState<string>("");
   const [manageToken, setManageToken] = useState<string>("");
+  /**
+   * Whether /api/bookings managed to send the confirmation email. Separate
+   * from the Stripe-resume `paidInfo.emailSent` because a no-deposit booking
+   * confirms in this same page load — there's no redirect to come back from.
+   */
+  const [directEmailSent, setDirectEmailSent] = useState(false);
 
   // State for resuming after a Stripe Checkout redirect back to /book.
   const [resumeStatus, setResumeStatus] = useState<
@@ -308,12 +314,13 @@ export default function BookingFlow({
     setSubmitting(true);
 
     if (step === "details" && service && selectedDate && selectedSlot) {
-      // Priced sessions now go through Stripe Checkout for the deposit.
-      // The calendar slot is only reserved once Stripe confirms payment
-      // (see app/api/stripe/webhook) — this call just starts checkout and
-      // redirects the whole page there.
+      // Deposits are off (2026-08-17), so there's no payment step: this call
+      // holds the slot on Nick's calendar and sends the confirmation, and the
+      // client pays on the day. The Stripe route and its webhook are still in
+      // the repo, unused — see the comment atop app/api/bookings/route.ts for
+      // how to switch deposits back on.
       try {
-        const res = await fetch("/api/checkout", {
+        const res = await fetch("/api/bookings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -335,17 +342,23 @@ export default function BookingFlow({
               locationMode === "onlocation"
                 ? `On-location — ${postcode}`
                 : "Lane Cove Studio, Sydney",
+            botcheck: false,
           }),
         });
         const json = await res.json();
-        if (res.ok && json.url) {
-          window.location.href = json.url;
-          return; // leave `submitting` true — the page is navigating away
+        if (res.ok && json.reference) {
+          setReference(json.reference);
+          setManageToken(json.manageToken ?? "");
+          setDirectEmailSent(Boolean(json.emailSent));
+          setSubmitting(false);
+          setTouched(false);
+          setStep("done");
+          return;
         }
         setSubmitError(
           typeof json.error === "string"
             ? json.error
-            : "We couldn't start checkout. Please try again.",
+            : "We couldn't confirm your booking. Please try again.",
         );
         setSubmitting(false);
         return;
@@ -510,14 +523,19 @@ export default function BookingFlow({
 
         {step === "done" && service && (
           <DoneStep
-            isEnquiry
+            isEnquiry={service.mode === "enquiry"}
             sessionName={service.name}
-            dateLabel={null}
-            timeLabel={null}
-            locationLabel={null}
+            dateLabel={selectedDate ? formatLongDate(selectedDate) : null}
+            timeLabel={selectedSlot?.label ?? null}
+            locationLabel={
+              locationMode === "onlocation" && postcode
+                ? `On-location — ${postcode}`
+                : "Lane Cove Studio, Sydney"
+            }
             reference={reference}
             manageToken={manageToken}
             name={form.name}
+            emailSent={directEmailSent}
             onRestart={restart}
           />
         )}
@@ -1157,13 +1175,24 @@ function DetailsStep({
             className="mt-6 w-full bg-gold px-8 py-4 text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft disabled:opacity-50"
           >
             {submitting
-              ? "Redirecting to secure payment…"
-              : `Continue to payment · ${AUD(deposit)} deposit`}
+              ? "Confirming your booking…"
+              : deposit > 0
+                ? `Continue to payment · ${AUD(deposit)} deposit`
+                : "Confirm booking"}
           </button>
           <p className="mt-3 text-center text-[0.72rem] text-faint">
-            You&rsquo;ll pay the deposit on Stripe&rsquo;s secure checkout,
-            then return here for your confirmation. The slot is only
-            reserved once payment succeeds.
+            {deposit > 0 ? (
+              <>
+                You&rsquo;ll pay the deposit on Stripe&rsquo;s secure checkout,
+                then return here for your confirmation. The slot is only
+                reserved once payment succeeds.
+              </>
+            ) : (
+              <>
+                No payment needed now — {AUD(total)} is settled on the day. Your
+                time is held as soon as you confirm.
+              </>
+            )}
           </p>
         </form>
 
@@ -1193,8 +1222,17 @@ function DetailsStep({
             {travelFee > 0 && (
               <SummaryRow label="Total" value={AUD(total)} />
             )}
-            <SummaryRow label="Deposit today" value={AUD(deposit)} accent />
-            <SummaryRow label="Balance on the day" value={AUD(balance)} />
+            {deposit > 0 ? (
+              <>
+                <SummaryRow label="Deposit today" value={AUD(deposit)} accent />
+                <SummaryRow label="Balance on the day" value={AUD(balance)} />
+              </>
+            ) : (
+              <>
+                <SummaryRow label="Due today" value="Nothing" accent />
+                <SummaryRow label="Payable on the day" value={AUD(total)} />
+              </>
+            )}
           </dl>
         </aside>
       </div>
@@ -1383,7 +1421,7 @@ function DoneStep({
           </>
         ) : (
           <>
-            Thanks {firstName} — your deposit is paid and the slot is reserved.
+            Thanks {firstName} — your time is reserved.
             {emailSent ? (
               <>
                 {" "}

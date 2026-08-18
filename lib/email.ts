@@ -93,8 +93,9 @@ function confirmationHtml(b: BookingEmailInput): string {
     </h1>
 
     <p style="font-size:15px;line-height:1.6;color:#3a3a3a;margin:0 0 24px;">
-      Thanks ${firstName} — your deposit is received and the time below is held
-      for you. The calendar invite is attached to this email.
+      Thanks ${firstName} — the time below is held for you${
+        b.depositAud > 0 ? " and your deposit is received" : ""
+      }. The calendar invite is attached to this email.
     </p>
 
     <div style="background:#fff;border:1px solid #e4e0da;padding:20px 24px;margin:0 0 24px;">
@@ -104,8 +105,12 @@ function confirmationHtml(b: BookingEmailInput): string {
         ${row("Time", b.timeLabel)}
         ${row("Location", b.locationLabel)}
         ${row("Reference", b.reference)}
-        ${row("Deposit paid", AUD(b.depositAud))}
-        ${row("Balance on the day", AUD(balance))}
+        ${
+          b.depositAud > 0
+            ? `${row("Deposit paid", AUD(b.depositAud))}
+        ${row("Balance on the day", AUD(balance))}`
+            : row("Payment on the day", AUD(b.totalAud))
+        }
       </table>
     </div>
 
@@ -142,8 +147,9 @@ function confirmationText(b: BookingEmailInput): string {
     `Time:     ${b.timeLabel}`,
     `Location: ${b.locationLabel}`,
     `Reference: ${b.reference}`,
-    `Deposit paid: ${AUD(b.depositAud)}`,
-    `Balance on the day: ${AUD(balance)}`,
+    ...(b.depositAud > 0
+      ? [`Deposit paid: ${AUD(b.depositAud)}`, `Balance on the day: ${AUD(balance)}`]
+      : [`Payment on the day: ${AUD(b.totalAud)}`]),
     "",
     "Bring two or three outfit options — solid colours photograph best.",
     "Arrive five minutes early. No need to know how to pose.",
@@ -160,7 +166,11 @@ function studioNotificationHtml(b: BookingEmailInput): string {
   <p style="margin:0 0 4px;"><strong>${b.sessionName}</strong></p>
   <p style="margin:0 0 12px;">${b.dateLabel} at ${b.timeLabel} · ${b.locationLabel}</p>
   <p style="margin:0 0 4px;">${b.customerName} — ${b.customerEmail}</p>
-  <p style="margin:0 0 12px;">Deposit ${AUD(b.depositAud)} paid · total ${AUD(b.totalAud)}</p>
+  <p style="margin:0 0 12px;">${
+    b.depositAud > 0
+      ? `Deposit ${AUD(b.depositAud)} paid · total ${AUD(b.totalAud)}`
+      : `${AUD(b.totalAud)} due on the day · no deposit taken`
+  }</p>
   ${b.note ? `<p style="margin:0 0 12px;"><em>Note:</em> ${b.note}</p>` : ""}
   <p style="margin:0;color:#8a8a8a;">The calendar event has already been created.</p>
 </body></html>`;
@@ -221,9 +231,11 @@ export async function sendBookingConfirmation(
     title: `${b.sessionName} — ${site.name}`,
     description: [
       `Reference ${b.reference}.`,
-      `Deposit ${AUD(b.depositAud)} paid; balance ${AUD(
-        b.totalAud - b.depositAud,
-      )} due on the day.`,
+      b.depositAud > 0
+        ? `Deposit ${AUD(b.depositAud)} paid; balance ${AUD(
+            b.totalAud - b.depositAud,
+          )} due on the day.`
+        : `${AUD(b.totalAud)} due on the day.`,
       `Questions: ${site.phone}`,
     ].join(" "),
     location: b.locationLabel,

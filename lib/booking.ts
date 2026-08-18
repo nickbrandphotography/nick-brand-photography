@@ -21,7 +21,15 @@ export type SessionType = {
   durationMin: number;
   /** Price in AUD. 0 for enquiry-only services. */
   price: number;
-  /** Deposit as a fraction of price, e.g. 0.2 = 20%. */
+  /**
+   * Deposit as a fraction of price, e.g. 0.2 = 20%.
+   *
+   * All zero as of 2026-08-17: Nick turned deposits off, so bookings confirm
+   * without payment and the balance is settled on the day. Set a non-zero
+   * value here to bring deposits back — it also needs STRIPE_SECRET_KEY in
+   * Vercel and the /api/checkout call restored in components/BookingFlow.tsx
+   * (see the comment at the top of app/api/bookings/route.ts).
+   */
   depositPct: number;
   mode: BookingMode;
   blurb: string;
@@ -42,7 +50,7 @@ export const sessionTypes: SessionType[] = [
     category: "Corporate Headshots",
     durationMin: 45,
     price: 395,
-    depositPct: 0.2,
+    depositPct: 0,
     mode: "instant",
     allowsOnLocation: true,
     blurb:
@@ -60,7 +68,7 @@ export const sessionTypes: SessionType[] = [
     category: "Corporate Headshots",
     durationMin: 90,
     price: 695,
-    depositPct: 0.2,
+    depositPct: 0,
     mode: "instant",
     popular: true,
     allowsOnLocation: true,
@@ -79,7 +87,7 @@ export const sessionTypes: SessionType[] = [
     category: "Personal Branding",
     durationMin: 180,
     price: 895,
-    depositPct: 0.2,
+    depositPct: 0,
     mode: "instant",
     allowsOnLocation: true,
     blurb:
@@ -133,7 +141,7 @@ export const sessionTypes: SessionType[] = [
     category: "Actors & Models",
     durationMin: 120,
     price: 750,
-    depositPct: 0.2,
+    depositPct: 0,
     mode: "instant",
     blurb:
       "A two-hour portfolio build with multiple looks and casting guidance.",
@@ -150,7 +158,7 @@ export const sessionTypes: SessionType[] = [
     category: "Family Sessions",
     durationMin: 90,
     price: 550,
-    depositPct: 0.2,
+    depositPct: 0,
     mode: "instant",
     blurb:
       "A relaxed 90-minute outdoor session at a Sydney beach or park for up to six people.",

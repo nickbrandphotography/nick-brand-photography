@@ -23,7 +23,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 
 const TITLE = `Photography FAQs — Sydney Headshots, Pricing & Process | ${site.name}`;
 const DESCRIPTION =
-  "Every question about working with Nick Brand Photography — pricing and GST, turnaround times, on-site team headshot days, insurance, copyright, studio location and booking.";
+  "Every question about working with Nick Brand Photography — pricing, GST, turnaround times, on-site team days, insurance, copyright and booking.";
 
 export const metadata: Metadata = {
   title: TITLE,

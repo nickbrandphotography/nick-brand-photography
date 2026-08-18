@@ -23,7 +23,7 @@ import { breadcrumbSchema } from "@/lib/schema";
 
 const TITLE = `Terms, Insurance & Business Details | ${site.name}`;
 const DESCRIPTION =
-  "Business terms for Nick Brand Photography — booking and cancellation, payment and invoicing, $20M public liability insurance, image usage rights and privacy for staff photography.";
+  "Business terms for Nick Brand Photography — booking, cancellation, payment, $20M public liability insurance, image rights and privacy for staff photography.";
 
 export const metadata: Metadata = {
   title: TITLE,

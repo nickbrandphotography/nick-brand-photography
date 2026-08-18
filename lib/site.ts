@@ -14,7 +14,7 @@ export const site = {
 
   tagline: "Sydney Corporate Headshot & Personal Branding Photographer",
   description:
-    "Nick Brand Photography produces corporate headshots, personal branding and executive portraits for Sydney professionals and teams. Studio in Lane Cove, on-site across Sydney.",
+    "Nick Brand Photography — corporate headshots, personal branding and executive portraits for Sydney professionals. Studio in Lane Cove, on-site across Sydney.",
 
   // Contact
   phone: "0403 835 467",

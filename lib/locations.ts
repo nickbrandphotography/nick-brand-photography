@@ -65,7 +65,7 @@ export const locations: Location[] = [
     metaTitle:
       "Corporate Headshots & Personal Branding Lane Cove | Nick Brand Photography",
     metaDescription:
-      "Corporate headshots, personal branding and executive portraits photographed at the Nick Brand Photography studio in Lane Cove. Quick sessions for North Shore professionals.",
+      "Corporate headshots, personal branding and executive portraits at the Nick Brand Photography studio in Lane Cove. Quick sessions for North Shore professionals.",
     h1: "Headshots & Personal Branding in Lane Cove",
     intro: [
       "Lane Cove is the home of Nick Brand Photography — the studio is on Centennial Avenue, around the corner from the Lane Cove village centre. For professionals and small businesses based in Lane Cove or the surrounding Lower North Shore, it is the closest dedicated headshot and branding studio in the area.",
@@ -145,7 +145,7 @@ export const locations: Location[] = [
     metaTitle:
       "Corporate Headshots North Sydney | Nick Brand Photography",
     metaDescription:
-      "Corporate headshots for North Sydney businesses. On-site team headshot days or studio sessions minutes away in Lane Cove. Professional, consistent, fast turnaround.",
+      "Corporate headshots for North Sydney businesses. On-site team headshot days or studio sessions minutes away in Lane Cove. Consistent, fast turnaround.",
     h1: "Corporate Headshots in North Sydney",
     intro: [
       "North Sydney is a major commercial hub in its own right — a dense cluster of corporate offices, technology companies and professional services just across the Harbour Bridge from the city.",
@@ -265,7 +265,7 @@ export const locations: Location[] = [
     metaTitle:
       "Corporate Headshots Chatswood | Nick Brand Photography",
     metaDescription:
-      "Corporate headshots for Chatswood and North Shore businesses. Studio sessions minutes away in Lane Cove or on-site team headshot days. Professional and consistent.",
+      "Corporate headshots for Chatswood and North Shore businesses. Studio sessions minutes away in Lane Cove, or on-site team headshot days. Consistent results.",
     h1: "Corporate Headshots in Chatswood",
     intro: [
       "Chatswood is the commercial heart of Sydney's North Shore — a busy mix of corporate offices, professional services and technology businesses with excellent transport links.",
@@ -425,7 +425,7 @@ export const locations: Location[] = [
     metaTitle:
       "Corporate Headshots St Leonards | Nick Brand Photography",
     metaDescription:
-      "Corporate headshots for St Leonards businesses, minutes from the Lane Cove studio. On-site team headshot days or quick individual sessions. Professional and consistent.",
+      "Corporate headshots for St Leonards businesses, minutes from the Lane Cove studio. On-site team headshot days or quick individual sessions. Consistent results.",
     h1: "Corporate Headshots in St Leonards",
     intro: [
       "St Leonards is a dense commercial and health precinct on the Lower North Shore, built around the Pacific Highway and the surrounding hospital and medical district. It is also one of the closest business hubs to Nick's studio.",

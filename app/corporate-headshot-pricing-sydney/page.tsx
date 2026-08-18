@@ -29,7 +29,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 
 const TITLE = "How Much Do Corporate Headshots Cost in Sydney? (2026 Guide)";
 const DESCRIPTION =
-  "What corporate headshots actually cost in Sydney in 2026: typical market ranges, what drives the price, team rates per person, and Nick Brand Photography's published prices from $395. No GST added.";
+  "Corporate headshot costs in Sydney, 2026: market ranges, price drivers, team rates, and Nick Brand Photography's published prices from $395. No GST added.";
 
 export const metadata: Metadata = {
   title: TITLE,

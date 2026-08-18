@@ -15,7 +15,7 @@ const crumbs = [
 
 const contactTitle = `Contact Nick Brand Photography | Sydney Photographer`;
 const contactDescription =
-  "Get in touch with Nick Brand Photography. Studio at 84 Centennial Avenue, Lane Cove NSW. Call 0403 835 467, email studio@nickbrandphotography.com, or book a session online.";
+  "Get in touch with Nick Brand Photography. Studio at 84 Centennial Avenue, Lane Cove NSW. Call 0403 835 467 or book a session online.";
 
 export const metadata: Metadata = {
   title: contactTitle,

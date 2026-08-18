@@ -25,7 +25,10 @@ export const metadata: Metadata = {
 const heroImage = getImage(
   "corporate-headshots",
   6,
-  "Sydney corporate headshot by Nick Brand Photography",
+  // build() in lib/images.ts already appends " by Nick Brand Photography" —
+  // do not include it here, or the credit is duplicated in the alt text and
+  // the ImageObject schema caption.
+  "Sydney corporate headshot",
 );
 const featured = pickImages(homeFeatured);
 

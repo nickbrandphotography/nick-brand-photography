@@ -141,7 +141,7 @@ export const services: Service[] = [
     navLabel: "Corporate Headshots",
     metaTitle: "Corporate Headshots Sydney | Nick Brand Photography",
     metaDescription:
-      "Professional corporate headshots in Sydney. Studio in Lane Cove or on-site at your office. Consistent, polished headshots delivered fast. From $395 per person; team rate $285.",
+      "Professional corporate headshots in Sydney. Studio in Lane Cove or on-site at your office. Consistent, polished, delivered fast. From $395; team rate $285.",
     h1: "Corporate Headshots in Sydney",
     relatedPosts: [
       "what-to-wear-for-corporate-headshots",
@@ -321,7 +321,7 @@ export const services: Service[] = [
     navLabel: "LinkedIn Headshots",
     metaTitle: "LinkedIn Headshots Sydney | Nick Brand Photography",
     metaDescription:
-      "LinkedIn headshots in Sydney optimised for the platform. Approachable, professional profile photos that lift engagement and credibility. Book a session in Lane Cove.",
+      "LinkedIn headshots in Sydney, optimised for the platform. Approachable, professional profile photos that lift engagement and credibility.",
     h1: "LinkedIn Headshots in Sydney",
     relatedPosts: [
       "why-professional-headshots-increase-linkedin-engagement",
@@ -444,7 +444,7 @@ export const services: Service[] = [
     navLabel: "Executive Portraits",
     metaTitle: "Executive Portraits Sydney | Nick Brand Photography",
     metaDescription:
-      "Executive portrait photography in Sydney for leaders, partners and board members. Considered, authoritative portraits for annual reports, press and company profiles.",
+      "Executive portrait photography in Sydney for leaders, partners and board members — authoritative portraits for annual reports, press and company profiles.",
     h1: "Executive Portraits in Sydney",
     ctaLabel: "Request a Quote",
     ctaHref: "/contact?service=executive-portraits-sydney",
@@ -565,7 +565,7 @@ export const services: Service[] = [
     navLabel: "Team Headshots",
     metaTitle: "Team & Office Headshots Sydney | Nick Brand Photography",
     metaDescription:
-      "On-site team headshots across Sydney. A mobile studio set up at your office for consistent staff headshots with minimal disruption. Team rate from $285 per person.",
+      "On-site team headshots across Sydney. A mobile studio set up at your office for consistent staff headshots with minimal disruption. From $285 per person.",
     h1: "Team & Office Headshots in Sydney",
     ctaLabel: "Get a Team Quote",
     ctaHref: "/contact?service=team-headshots-sydney",
@@ -740,7 +740,7 @@ export const services: Service[] = [
     metaTitle:
       "Personal Branding Photographer Sydney | Nick Brand Photography",
     metaDescription:
-      "Personal branding photography in Sydney for founders, consultants and creators. A library of headshots, lifestyle and at-work images for your website and socials.",
+      "Personal branding photography in Sydney for founders, consultants and creators. Headshots, lifestyle and at-work images for your website and socials.",
     h1: "Personal Branding Photographer in Sydney",
     relatedPosts: [
       "personal-branding-photography-for-entrepreneurs",
@@ -908,7 +908,7 @@ export const services: Service[] = [
     navLabel: "Actor Headshots",
     metaTitle: "Actor Headshots Sydney | Nick Brand Photography",
     metaDescription:
-      "Actor headshots and model portfolios in Sydney. Industry-standard images with casting director guidance, multiple looks and fast turnaround. Portfolio build from $750.",
+      "Actor headshots and model portfolios in Sydney. Industry-standard images with casting director guidance, multiple looks and fast turnaround.",
     h1: "Actor Headshots & Model Portfolios in Sydney",
     relatedLocations: ["surry-hills", "sydney-cbd", "crows-nest"],
     costNotes: [

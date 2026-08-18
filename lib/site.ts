@@ -12,7 +12,13 @@ export const site = {
   url: "https://www.nickbrandphotography.com",
   domain: "www.nickbrandphotography.com",
 
-  tagline: "Sydney Corporate Headshot & Personal Branding Photographer",
+  // Kept short deliberately — this feeds the <title> tag directly
+  // (`${tagline} | ${name}`), and the combined string needs to stay under
+  // ~65 characters or it truncates in search results. "Personal Branding"
+  // is dropped here on purpose: the homepage H1 and /personal-branding-sydney
+  // both already carry that phrase, so the title tag can stay tightly
+  // focused on the primary keyword instead of splitting relevance two ways.
+  tagline: "Sydney Corporate Headshot Photographer",
   description:
     "Nick Brand Photography — corporate headshots, personal branding and executive portraits for Sydney professionals. Studio in Lane Cove, on-site across Sydney.",
 

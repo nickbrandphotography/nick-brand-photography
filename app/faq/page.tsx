@@ -21,7 +21,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/schema";
  * the markup at all.
  */
 
-const TITLE = `Photography FAQs — Sydney Headshots, Pricing & Process | ${site.name}`;
+const TITLE = `Sydney Headshot Photography FAQs | ${site.name}`;
 const DESCRIPTION =
   "Every question about working with Nick Brand Photography — pricing, GST, turnaround times, on-site team days, insurance, copyright and booking.";
 

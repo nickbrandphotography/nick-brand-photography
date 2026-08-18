@@ -28,6 +28,33 @@ export type PricingGroup = {
   tiers: PricingTier[];
 };
 
+/**
+ * Look up a single tier by the session type it books.
+ *
+ * Service pages choose their own tiers by session id (see pricingSessionIds in
+ * lib/services.ts) rather than rendering a whole group — showing a group meant
+ * the family page listed actor and band tiers, and the actor page listed family.
+ */
+export function getTierBySessionId(
+  sessionTypeId: string,
+): PricingTier | undefined {
+  for (const group of Object.values(pricingGroups)) {
+    const found = group.tiers.find((t) => t.sessionTypeId === sessionTypeId);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+/**
+ * Tiers for the given session ids, in the order given. Unknown ids are skipped
+ * rather than rendering an empty card, so a typo degrades to a shorter list.
+ */
+export function getTiers(sessionTypeIds: string[]): PricingTier[] {
+  return sessionTypeIds
+    .map((id) => getTierBySessionId(id))
+    .filter((t): t is PricingTier => Boolean(t));
+}
+
 export const pricingGroups: Record<string, PricingGroup> = {
   corporate: {
     id: "corporate",
@@ -148,7 +175,7 @@ export const pricingGroups: Record<string, PricingGroup> = {
     label: "Portrait & Creative Pricing",
     tiers: [
       {
-        name: "Family Session",
+        name: "Family Basic",
         price: "$550",
         priceValue: 550,
         unit: "90 minutes — up to 6 people",
@@ -160,8 +187,42 @@ export const pricingGroups: Record<string, PricingGroup> = {
           "Print release included",
           "Pets welcome",
         ],
-        ctaLabel: "Book Family",
+        ctaLabel: "Book Family Basic",
         sessionTypeId: "family",
+      },
+      {
+        name: "Family Extended",
+        price: "$850",
+        priceValue: 850,
+        unit: "2 hours — up to 10 people",
+        badge: "Extended Family",
+        highlight: true,
+        features: [
+          "Up to 10 people",
+          "Two locations, or golden hour",
+          "40 fully edited images",
+          "Grandparents and pets welcome",
+          "Group + individual portraits",
+          "Print release included",
+        ],
+        ctaLabel: "Book Family Extended",
+        sessionTypeId: "family-extended",
+      },
+      {
+        name: "Actor Starter",
+        price: "$450",
+        priceValue: 450,
+        unit: "1 hour — studio",
+        features: [
+          "Two looks",
+          "10 fully edited images",
+          "Casting-standard crops",
+          "Industry-standard sizing",
+          "Online gallery delivery",
+          "Ideal for a first submission",
+        ],
+        ctaLabel: "Book Actor Starter",
+        sessionTypeId: "actor-starter",
       },
       {
         name: "Portfolio Build",
@@ -182,10 +243,28 @@ export const pricingGroups: Record<string, PricingGroup> = {
         sessionTypeId: "portfolio",
       },
       {
+        name: "Solo Artist",
+        price: "$595",
+        priceValue: 595,
+        unit: "2 hours — one location",
+        features: [
+          "Solo musicians and singer-songwriters",
+          "2–3 looks",
+          "20 fully edited images",
+          "Press kit + social formats",
+          "Cover art crops included",
+          "Creative direction included",
+        ],
+        ctaLabel: "Book Solo Artist",
+        sessionTypeId: "solo-artist",
+      },
+      {
         name: "Band & Artist",
         price: "$995",
         priceValue: 995,
         unit: "3 hours — location shoot",
+        badge: "Full Band",
+        highlight: true,
         features: [
           "Up to 6 band members",
           "2 Sydney locations",

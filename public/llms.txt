@@ -2,8 +2,8 @@
 
 > Nick Brand Photography is a Sydney-based commercial and portrait photography
 > studio specialising in corporate headshots, personal branding, executive
-> portraits, team headshots, LinkedIn headshots, actor headshots and corporate
-> event photography. The studio is at 84 Centennial Avenue, Lane Cove NSW 2066,
+> portraits, team headshots, LinkedIn headshots, actor headshots, band and
+> musician photography, family sessions and corporate event photography. The studio is at 84 Centennial Avenue, Lane Cove NSW 2066,
 > and Nick works on-site at offices across Greater Sydney. Photographer Nick
 > Brand has 20+ years of experience and a 5.0 Google rating.
 
@@ -25,9 +25,10 @@
 - Executive portraits: Professional session $695; group rates on enquiry.
 - Team & office headshots: $285 per person for teams of 5+, on-site mobile studio.
 - Personal branding: from $895 (half day) to $2,800 (premium full day).
-- Actor headshots & model portfolios: Portfolio Build $750 (2-hour session).
+- Actor headshots & model portfolios: Actor Starter $450 (1 hour, 2 looks); Portfolio Build $750 (2-hour session).
 - Corporate event photography: quoted per event.
-- Family photography: $550 for a 90-minute outdoor Sydney session.
+- Family photography: Basic $550 (90 minutes, up to 6 people); Extended $850 (2 hours, up to 10 people).
+- Band & musician photography: Solo Artist $595 (2 hours); Band & Artist $995 (3 hours, up to 6 members).
 
 ## Main pages
 
@@ -40,6 +41,7 @@
 - Actor headshots: https://www.nickbrandphotography.com/actor-headshots-sydney
 - Corporate events: https://www.nickbrandphotography.com/corporate-event-photographer-sydney
 - Family photography: https://www.nickbrandphotography.com/family-photography-sydney
+- Band & musician photography: https://www.nickbrandphotography.com/band-photographer-sydney
 - Service areas: https://www.nickbrandphotography.com/locations
 - About Nick: https://www.nickbrandphotography.com/about
 - Blog / guides: https://www.nickbrandphotography.com/blog

@@ -1,36 +1,53 @@
 import Link from "next/link";
-import { pricingGroups } from "@/lib/pricing";
+import { getTiers } from "@/lib/pricing";
 import { bookingHref } from "@/lib/booking";
 import { Container, SectionHeading } from "./Section";
 
-/** Three-column pricing cards for a service line. */
+/**
+ * Pricing cards for a service page.
+ *
+ * Takes the exact sessions the page offers, NOT a pricing group. Rendering a
+ * whole group is what put actor and band tiers on the family page and family
+ * tiers on the actor page — every page now lists its own service only.
+ */
 export default function PricingCards({
-  groupKey,
+  sessionIds,
   eyebrow = "Pricing",
-  title,
+  title = "Pricing",
   lead,
 }: {
-  groupKey: "corporate" | "branding" | "portrait";
+  /** Session type ids, in display order — see pricingSessionIds in lib/services.ts. */
+  sessionIds: string[];
   eyebrow?: string;
   title?: string;
   lead?: string;
 }) {
-  const group = pricingGroups[groupKey];
+  const tiers = getTiers(sessionIds);
+  if (tiers.length === 0) return null;
+
+  // The grid tracks the number of tiers, so a single-session page gets one
+  // properly-sized card instead of a lonely third of a row.
+  const gridClass =
+    tiers.length === 1
+      ? "mx-auto max-w-md"
+      : tiers.length === 2
+        ? "sm:grid-cols-2 mx-auto max-w-3xl"
+        : "sm:grid-cols-2 lg:grid-cols-3";
 
   return (
     <section className="section bg-ink-2">
       <Container>
         <SectionHeading
           eyebrow={eyebrow}
-          title={title ?? group.label}
+          title={title}
           lead={
             lead ??
             "Transparent pricing. Every session includes professional editing and a private online gallery."
           }
         />
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {group.tiers.map((tier) => (
+        <div className={`mt-12 grid gap-6 ${gridClass}`}>
+          {tiers.map((tier) => (
             <div
               key={tier.name}
               className={`flex flex-col border p-8 ${
@@ -47,9 +64,7 @@ export default function PricingCards({
                 <span className="mb-4 h-[1.55rem]" aria-hidden />
               )}
 
-              <h3 className="font-display text-2xl text-cream">
-                {tier.name}
-              </h3>
+              <h3 className="font-display text-2xl text-cream">{tier.name}</h3>
 
               <p className="mt-3 flex items-start gap-1">
                 <span className="mt-1 text-base text-gold">$</span>
@@ -63,10 +78,7 @@ export default function PricingCards({
 
               <ul className="mt-6 space-y-3 border-t border-border pt-6">
                 {tier.features.map((feat) => (
-                  <li
-                    key={feat}
-                    className="flex gap-3 text-sm text-muted"
-                  >
+                  <li key={feat} className="flex gap-3 text-sm text-muted">
                     <span className="text-gold" aria-hidden>
                       ✓
                     </span>

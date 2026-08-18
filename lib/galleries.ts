@@ -16,6 +16,8 @@ const M = "model-portfolios" as const;
 const A = "actor-headshots" as const;
 const P = "personal-branding" as const;
 const F = "family" as const;
+const MU = "musician-portraits" as const;
+const SI = "singer-portraits" as const;
 
 /** Homepage "Recent work" — the strongest, most varied 8 (light/dark staggered). */
 export const homeFeatured: GalleryPick[] = [
@@ -97,6 +99,18 @@ export const serviceGalleries: Record<string, GalleryPick[]> = {
     { silo: F, i: 10, alt: "Parents and child in a candid outdoor family session, Sydney" },
     { silo: F, i: 3, alt: "Three siblings photographed together outdoors, Sydney" },
     { silo: F, i: 6, alt: "Family portrait beneath a floral arch, Sydney" },
+  ],
+  // Musician and singer frames staggered so the page shows both solo artists
+  // and performing musicians rather than one look repeated.
+  "band-photographer-sydney": [
+    { silo: MU, i: 2, alt: "Musician portrait with guitar in low light, Sydney" },
+    { silo: SI, i: 3, alt: "Singer photographed mid-performance at a Sydney venue" },
+    { silo: MU, i: 6, alt: "Band member portrait against a warehouse wall, Sydney" },
+    { silo: SI, i: 8, alt: "Vocalist portrait in dramatic stage lighting, Sydney" },
+    { silo: MU, i: 9, alt: "Musician press shot in a Sydney laneway" },
+    { silo: SI, i: 12, alt: "Singer-songwriter portrait with acoustic guitar, Sydney" },
+    { silo: MU, i: 5, alt: "Black-and-white musician portrait, Sydney studio" },
+    { silo: SI, i: 15, alt: "Performer portrait at golden hour by Sydney Harbour" },
   ],
 };
 

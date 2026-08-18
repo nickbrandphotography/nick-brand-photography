@@ -192,9 +192,12 @@ export default function ServicePageTemplate({ service }: { service: Service }) {
         </Container>
       </section>
 
-      {/* Pricing */}
-      {service.pricingGroupKey ? (
-        <PricingCards groupKey={service.pricingGroupKey} />
+      {/* Pricing — this service's own sessions only */}
+      {service.pricingSessionIds?.length ? (
+        <PricingCards
+          sessionIds={service.pricingSessionIds}
+          title={service.pricingTitle ?? "Pricing"}
+        />
       ) : null}
 
       {/* Testimonials */}

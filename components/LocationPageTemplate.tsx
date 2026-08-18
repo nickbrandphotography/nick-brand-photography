@@ -126,8 +126,14 @@ export default function LocationPageTemplate({
       </section>
 
       {/* Pricing */}
+      {/* Suburb pages sell headshots, so they list the headshot sessions only —
+          not family or portfolio work, which isn't what these pages rank for. */}
       <PricingCards
-        groupKey="corporate"
+        sessionIds={[
+          "headshot-essential",
+          "headshot-professional",
+          "team-quote",
+        ]}
         title={`Headshot pricing for ${location.suburb}`}
       />
 

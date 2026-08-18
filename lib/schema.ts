@@ -7,7 +7,7 @@
 import { site, absoluteUrl } from "./site";
 import { testimonials, aggregateRating } from "./testimonials";
 import type { FAQ, Service } from "./services";
-import { pricingGroups } from "./pricing";
+import { getTiers } from "./pricing";
 
 const ORG_ID = `${site.url}/#business`;
 const PERSON_ID = `${site.url}/#nick`;
@@ -115,14 +115,17 @@ export function serviceSchema(service: Service) {
 
   // When the service has published pricing, expose it as an OfferCatalog so
   // search engines and AI answer engines can quote accurate "from" prices.
-  const group = service.pricingGroupKey
-    ? pricingGroups[service.pricingGroupKey]
-    : undefined;
-  if (!group) return base;
+  // Offers must mirror the tiers actually shown on the page — a family page
+  // that advertised actor and band offers to search engines was wrong twice
+  // over, in the markup and on screen.
+  const tiers = service.pricingSessionIds
+    ? getTiers(service.pricingSessionIds)
+    : [];
+  if (tiers.length === 0) return base;
 
   return {
     ...base,
-    offers: group.tiers.map((tier) => ({
+    offers: tiers.map((tier) => ({
       "@type": "Offer",
       name: tier.name,
       price: tier.priceValue,

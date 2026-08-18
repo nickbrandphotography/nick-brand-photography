@@ -32,8 +32,18 @@ export type Service = {
   /** gallery silo + how many images to show */
   gallerySilo: ImageSilo;
   galleryCount: number;
-  /** key into pricingGroups (lib/pricing.ts), optional */
-  pricingGroupKey?: "corporate" | "branding" | "portrait";
+  /**
+   * The pricing tiers this page shows, named by the session type each one
+   * books, in display order. THIS SERVICE'S OWN SESSIONS ONLY — a family page
+   * must not list actor or band tiers, which is exactly what happened when
+   * pages rendered a whole pricing group.
+   *
+   * Ids must exist in `sessionTypes` (lib/booking.ts) and be carried by a tier
+   * in `pricingGroups` (lib/pricing.ts). Omit for a page with no pricing.
+   */
+  pricingSessionIds?: string[];
+  /** Heading for the pricing section. Defaults to "Pricing" if unset. */
+  pricingTitle?: string;
   /**
    * The session this page's own CTAs should open — an `id` from `sessionTypes`
    * in lib/booking.ts. Without it, "Check Availability" lands on the generic
@@ -63,6 +73,12 @@ export const services: Service[] = [
   {
     slug: "corporate-headshots-sydney",
     bookingSessionId: "headshot-professional",
+    pricingSessionIds: [
+      "headshot-essential",
+      "headshot-professional",
+      "team-quote",
+    ],
+    pricingTitle: "Corporate Headshot Pricing",
     navLabel: "Corporate Headshots",
     metaTitle: "Corporate Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -123,7 +139,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "corporate-headshots",
     galleryCount: 12,
-    pricingGroupKey: "corporate",
     faqs: [
       {
         q: "Where do corporate headshot sessions take place?",
@@ -157,6 +172,8 @@ export const services: Service[] = [
   {
     slug: "linkedin-headshots-sydney",
     bookingSessionId: "headshot-essential",
+    pricingSessionIds: ["headshot-essential", "headshot-professional"],
+    pricingTitle: "LinkedIn Headshot Pricing",
     navLabel: "LinkedIn Headshots",
     metaTitle: "LinkedIn Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -216,7 +233,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "corporate-headshots",
     galleryCount: 9,
-    pricingGroupKey: "corporate",
     faqs: [
       {
         q: "What makes a LinkedIn headshot different from a normal headshot?",
@@ -246,6 +262,8 @@ export const services: Service[] = [
   {
     slug: "executive-portraits-sydney",
     bookingSessionId: "headshot-professional",
+    pricingSessionIds: ["headshot-professional", "team-quote"],
+    pricingTitle: "Executive Portrait Pricing",
     navLabel: "Executive Portraits",
     metaTitle: "Executive Portraits Sydney | Nick Brand Photography",
     metaDescription:
@@ -305,7 +323,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "corporate-headshots",
     galleryCount: 9,
-    pricingGroupKey: "corporate",
     faqs: [
       {
         q: "What is the difference between an executive portrait and a corporate headshot?",
@@ -335,6 +352,8 @@ export const services: Service[] = [
   {
     slug: "team-headshots-sydney",
     bookingSessionId: "team-quote",
+    pricingSessionIds: ["team-quote", "headshot-professional"],
+    pricingTitle: "Team Headshot Pricing",
     navLabel: "Team Headshots",
     metaTitle: "Team & Office Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -394,7 +413,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "corporate-headshots",
     galleryCount: 12,
-    pricingGroupKey: "corporate",
     faqs: [
       {
         q: "How does an on-site team headshot day work?",
@@ -424,6 +442,8 @@ export const services: Service[] = [
   {
     slug: "personal-branding-sydney",
     bookingSessionId: "brand-starter",
+    pricingSessionIds: ["brand-starter", "brand-full-day", "brand-premium"],
+    pricingTitle: "Personal Branding Pricing",
     navLabel: "Personal Branding",
     metaTitle:
       "Personal Branding Photographer Sydney | Nick Brand Photography",
@@ -484,7 +504,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "personal-branding",
     galleryCount: 2,
-    pricingGroupKey: "branding",
     faqs: [
       {
         q: "What is personal branding photography?",
@@ -514,6 +533,8 @@ export const services: Service[] = [
   {
     slug: "actor-headshots-sydney",
     bookingSessionId: "portfolio",
+    pricingSessionIds: ["actor-starter", "portfolio"],
+    pricingTitle: "Actor & Model Pricing",
     navLabel: "Actor Headshots",
     metaTitle: "Actor Headshots Sydney | Nick Brand Photography",
     metaDescription:
@@ -573,7 +594,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "actor-headshots",
     galleryCount: 6,
-    pricingGroupKey: "portrait",
     faqs: [
       {
         q: "What do actors get in a portfolio session?",
@@ -581,7 +601,7 @@ export const services: Service[] = [
       },
       {
         q: "Do you photograph models as well as actors?",
-        a: "Yes. The Portfolio Build session suits both actors and models. The shoot is planned around the work you are submitting for.",
+        a: "Yes. Both the Actor Starter and the Portfolio Build suit actors and models. The shoot is planned around the work you are submitting for.",
       },
       {
         q: "How quickly can I get my headshots?",
@@ -589,7 +609,7 @@ export const services: Service[] = [
       },
       {
         q: "How much do actor headshots cost in Sydney?",
-        a: "The actor and model Portfolio Build is $750 for a two-hour session in studio or on location.",
+        a: "The Actor Starter session is $450 for one hour in studio, with two looks and 10 fully edited images — enough for a first agency submission. The Portfolio Build is $750 for two hours in studio or on location, with three to four looks and 25 fully edited images.",
       },
     ],
     related: [
@@ -692,6 +712,8 @@ export const services: Service[] = [
   {
     slug: "family-photography-sydney",
     bookingSessionId: "family",
+    pricingSessionIds: ["family", "family-extended"],
+    pricingTitle: "Family Session Pricing",
     navLabel: "Family Sessions",
     metaTitle: "Family Photographer Sydney | Nick Brand Photography",
     metaDescription:
@@ -751,7 +773,6 @@ export const services: Service[] = [
     ],
     gallerySilo: "family",
     galleryCount: 9,
-    pricingGroupKey: "portrait",
     faqs: [
       {
         q: "Where do family sessions take place?",
@@ -759,7 +780,7 @@ export const services: Service[] = [
       },
       {
         q: "How many people can be in a family session?",
-        a: "A standard family session covers up to six people, and pets are welcome. For larger extended-family groups, get in touch to plan the session.",
+        a: "The Family Basic session covers up to six people, and pets are welcome. For grandparents, cousins and larger extended-family groups, the Family Extended session covers up to ten people across two hours.",
       },
       {
         q: "Do I get a print release?",
@@ -767,10 +788,100 @@ export const services: Service[] = [
       },
       {
         q: "How much does a family photography session cost in Sydney?",
-        a: "A family session is $550 for 90 minutes, up to six people, and includes 20 fully edited images, an online gallery and a print release.",
+        a: "Family Basic is $550 for 90 minutes with up to six people and 20 fully edited images. Family Extended is $850 for two hours with up to ten people, two locations and 40 fully edited images. Both include an online gallery and a print release.",
       },
     ],
     related: ["personal-branding-sydney", "corporate-headshots-sydney"],
+  },
+
+  /* ----------------------------------------------------------------------- */
+  {
+    slug: "band-photographer-sydney",
+    bookingSessionId: "solo-artist",
+    pricingSessionIds: ["solo-artist", "band-artist"],
+    pricingTitle: "Music Photography Pricing",
+    navLabel: "Band & Musician",
+    metaTitle: "Band & Musician Photographer Sydney | Nick Brand Photography",
+    metaDescription:
+      "Band and musician photography in Sydney. Press shots, cover art and social content for solo artists and full bands, shot on location. Solo sessions from $595.",
+    h1: "Band & Musician Photography in Sydney",
+    eyebrow: "Band & Musician",
+    summary:
+      "Press shots, cover art and social content for Sydney musicians and bands.",
+    heroSilo: "musician-portraits",
+    heroIndex: 4,
+    intro: [
+      "A press shot has to work everywhere at once — a festival lineup, a Spotify profile, a venue poster and a journalist's article, often cropped differently in each. That takes a session planned around where the images will actually be used, not just a few frames in a rehearsal room.",
+      "Nick Brand Photography shoots solo artists and full bands on location across Sydney, delivering press kit, cover art and social formats from the same session.",
+    ],
+    outcomes: [
+      {
+        title: "Built for press and streaming",
+        text: "Delivered in the crops promoters, venues and streaming platforms ask for, so the same shoot covers a poster, a profile and a feature.",
+      },
+      {
+        title: "Locations with character",
+        text: "Laneways, warehouses, stages and the harbour at dusk — backdrops that suit the sound rather than a blank studio wall.",
+      },
+      {
+        title: "Group and individual frames",
+        text: "Full band shots plus individual portraits of every member, so the band and its players are covered in one session.",
+      },
+      {
+        title: "Nobody has to pose",
+        text: "Musicians are used to performing, not modelling. Clear direction gets natural images from people who feel awkward standing still.",
+      },
+    ],
+    process: [
+      {
+        title: "Talk about the release",
+        text: "We cover what's coming — single, album, tour — and where the images need to work.",
+      },
+      {
+        title: "Choose locations",
+        text: "One or two Sydney locations picked to match the look of the project.",
+      },
+      {
+        title: "The shoot",
+        text: "Group and individual setups with a few look changes, timed for the light.",
+      },
+      {
+        title: "Deliver",
+        text: "Fully edited images in press, cover art and social formats, ready to send to press and platforms.",
+      },
+    ],
+    whoFor: [
+      "Solo musicians and singer-songwriters",
+      "Bands releasing a single or album",
+      "Artists refreshing press and streaming profiles",
+      "Performers building an EPK",
+      "Managers and labels commissioning press shots",
+    ],
+    gallerySilo: "musician-portraits",
+    galleryCount: 8,
+    faqs: [
+      {
+        q: "How much does a band photoshoot cost in Sydney?",
+        a: "The Solo Artist session is $595 for two hours at one Sydney location, with 20 fully edited images. The Band & Artist session is $995 for three hours across two locations, covering up to six members with 30 fully edited images.",
+      },
+      {
+        q: "Do you photograph solo musicians as well as full bands?",
+        a: "Yes. The Solo Artist session is built for singer-songwriters and solo performers, and the Band & Artist session covers groups of up to six members with both group and individual frames.",
+      },
+      {
+        q: "Where are band photos taken in Sydney?",
+        a: "On location — laneways, warehouses, rehearsal spaces, stages and harbourside spots across Sydney, chosen to match the project. The Lane Cove studio is available when a clean backdrop suits the release better.",
+      },
+      {
+        q: "What formats do I get for press and streaming?",
+        a: "Every session is delivered in press kit sizing, square cover art crops and vertical social formats, so the same images work for media, streaming platforms and social posts without recropping.",
+      },
+      {
+        q: "Can we shoot at a gig or rehearsal?",
+        a: "Yes. Live and rehearsal coverage can be added to either session, or arranged as its own shoot — get in touch with the dates and venue.",
+      },
+    ],
+    related: ["actor-headshots-sydney", "personal-branding-sydney"],
   },
 ];
 

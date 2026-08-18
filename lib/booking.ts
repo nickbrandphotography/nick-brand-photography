@@ -136,6 +136,23 @@ export const sessionTypes: SessionType[] = [
     ],
   },
   {
+    id: "actor-starter",
+    name: "Actor Starter Session",
+    category: "Actors & Models",
+    durationMin: 60,
+    price: 450,
+    depositPct: 0,
+    mode: "instant",
+    blurb:
+      "A one-hour studio session for a first agency submission — two looks, casting-standard crops.",
+    includes: [
+      "Studio session",
+      "2 looks",
+      "10 fully edited images",
+      "Industry-standard sizing",
+    ],
+  },
+  {
     id: "portfolio",
     name: "Actor & Model Portfolio",
     category: "Actors & Models",
@@ -154,7 +171,7 @@ export const sessionTypes: SessionType[] = [
   },
   {
     id: "family",
-    name: "Family Session",
+    name: "Family Session — Basic",
     category: "Family Sessions",
     durationMin: 90,
     price: 550,
@@ -167,6 +184,41 @@ export const sessionTypes: SessionType[] = [
       "20 fully edited images",
       "Print release included",
       "Pets welcome",
+    ],
+  },
+  {
+    id: "family-extended",
+    name: "Family Session — Extended",
+    category: "Family Sessions",
+    durationMin: 120,
+    price: 850,
+    depositPct: 0,
+    mode: "instant",
+    blurb:
+      "Two hours for up to ten people across two Sydney locations — room for extended family and grandparents.",
+    includes: [
+      "Up to 10 people",
+      "Two locations or golden hour",
+      "40 fully edited images",
+      "Print release included",
+    ],
+  },
+  {
+    id: "solo-artist",
+    name: "Solo Artist Session",
+    category: "Music & Bands",
+    durationMin: 120,
+    price: 595,
+    depositPct: 0,
+    mode: "instant",
+    allowsOnLocation: true,
+    blurb:
+      "Two hours at one Sydney location for solo musicians and singer-songwriters — press shots and cover art.",
+    includes: [
+      "One Sydney location",
+      "2–3 looks",
+      "20 fully edited images",
+      "Press kit + social formats",
     ],
   },
   {

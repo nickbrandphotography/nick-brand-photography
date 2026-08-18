@@ -58,7 +58,18 @@ export async function generateMetadata({
       url: absoluteUrl(`/blog/${slug}`),
       type: "article",
       publishedTime: post.date,
+      modifiedTime: post.updated ?? post.date,
+      authors: [absoluteUrl("/about")],
       images: [{ url: ogImage, alt: post.title }],
+    },
+    // Next does NOT deep-merge `twitter` across route segments, so without this
+    // every blog post inherited the homepage's Twitter card — wrong title,
+    // wrong description, wrong image.
+    twitter: {
+      card: "summary_large_image",
+      title: post.metaTitle,
+      description: post.metaDescription,
+      images: [ogImage],
     },
   };
 }
@@ -88,15 +99,25 @@ export default async function BlogPostPage({ params }: Props) {
     articleSection: post.category,
     author: {
       "@type": "Person",
+      "@id": `${site.url}/#nick`,
       name: site.founder,
       url: absoluteUrl("/about"),
     },
-    publisher: {
-      "@type": "Organization",
-      name: site.name,
-      url: site.url,
-    },
+    // Reference the LocalBusiness node (emitted sitewide from app/layout.tsx)
+    // rather than inlining a stub Organization with no logo — Google's article
+    // guidance wants a publisher logo, and the real node has one.
+    publisher: { "@id": `${site.url}/#business` },
+    isPartOf: { "@id": `${site.url}/#website` },
     mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+    wordCount:
+      post.intro.join(" ").split(/\s+/).length +
+      post.sections.reduce(
+        (n, s) =>
+          n +
+          (s.paragraphs?.join(" ").split(/\s+/).length ?? 0) +
+          (s.list?.join(" ").split(/\s+/).length ?? 0),
+        0,
+      ),
   };
 
   return (

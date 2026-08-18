@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Pre-SEO-work backup created 2026-08-18 (safe to delete once changes are reviewed)
+.backup-pre-seo-2026-08-18/
+
+# SEO work, Aug 2026 — local-only folders
+.backup-pre-seo-2026-08-18/
+_to_delete/
+.image-review/

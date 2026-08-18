@@ -13,31 +13,14 @@ import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
 import JsonLd from "@/components/JsonLd";
-import {
-  localBusinessSchema,
-  personSchema,
-  webSiteSchema,
-  faqSchema,
-  imageObjectSchema,
-} from "@/lib/schema";
+import { personSchema, faqSchema, imageObjectSchema } from "@/lib/schema";
+import { homeFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
   title: `${site.tagline} | ${site.name}`,
   description: site.description,
   alternates: { canonical: absoluteUrl("/") },
 };
-
-/**
- * Render the homepage on-demand from the deployment serving the request,
- * instead of from a statically-cached payload. This prevents Vercel
- * "version skew": after a new deploy, a client-side navigation back to "/"
- * (e.g. Events → Home) was being answered with an older build, which reverted
- * the hero to a previous photo. Forcing dynamic rendering means "/" always
- * reflects the current build. The page uses only static data, so the rendered
- * output is identical — the only change is it is generated per request rather
- * than cached at build time.
- */
-export const dynamic = "force-dynamic";
 
 const heroImage = getImage(
   "corporate-headshots",
@@ -46,36 +29,17 @@ const heroImage = getImage(
 );
 const featured = pickImages(homeFeatured);
 
-const homeFaqs = [
-  {
-    q: "What type of photography does Nick Brand Photography specialise in?",
-    a: "Nick Brand Photography specialises in corporate headshots, personal branding photography, executive portraits, team headshots, LinkedIn headshots, actor headshots and corporate event photography across Sydney.",
-  },
-  {
-    q: "Where is Nick Brand Photography based?",
-    a: "The studio is at 84 Centennial Avenue, Lane Cove NSW. Sessions also run on-site at offices and on location across Greater Sydney, including the CBD, North Sydney, Surry Hills, Parramatta and Chatswood.",
-  },
-  {
-    q: "How do I book a photography session?",
-    a: "Bookings are made online through the booking page, which shows live availability. You can also call 0403 835 467 or email studio@nickbrandphotography.com to discuss a shoot.",
-  },
-  {
-    q: "Do you photograph teams at their own office?",
-    a: "Yes. On-site team headshot days are run across Sydney with a mobile studio set up in your office, so staff are photographed consistently with minimal disruption.",
-  },
-];
-
 export default function HomePage() {
   return (
     <>
-      {/* Structured data — the LocalBusiness (#business) entity referenced by
-          every service page's provider, plus Nick (#nick), the WebSite entity,
-          and the homepage FAQ. */}
+      {/* Structured data. The LocalBusiness (#business) and WebSite entities are
+          emitted from app/layout.tsx so they appear on EVERY page — a crawler or
+          answer engine fetching a single service page used to get a dangling
+          {"@id": ".../#business"} reference with no node to resolve it. Only the
+          homepage-specific nodes live here. */}
       <JsonLd
         data={[
-          localBusinessSchema(),
           personSchema(),
-          webSiteSchema(),
           faqSchema(homeFaqs),
           imageObjectSchema(heroImage.src, heroImage.alt),
         ]}
@@ -96,12 +60,29 @@ export default function HomePage() {
               photography for Sydney professionals and teams. Studio in Lane
               Cove — or on-site at your office, anywhere across Sydney.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            {/* The positioning claim. Previously the site never said, anywhere,
+                why someone should choose Nick over the next competent Sydney
+                photographer — which is also what an AI answer engine needs
+                before it can recommend anyone. */}
+            <p className="mt-5 max-w-xl border-l border-gold pl-5 text-[1.02rem] leading-relaxed text-cream/90">
+              One photographer, every frame. Nick shoots each session himself —
+              which is why a team of fifty comes back looking like it belongs to
+              one company, and why the person who quotes you is the person who
+              turns up.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row" data-cta="home-hero">
               <Button href={site.bookingUrl}>Book a Session</Button>
-              <Button href="/corporate-headshots-sydney" variant="outline">
-                View Services
+              <Button
+                href="/corporate-headshot-pricing-sydney"
+                variant="outline"
+              >
+                See Pricing
               </Button>
             </div>
+            <p className="mt-4 text-[0.85rem] text-faint">
+              Corporate headshots from $395 · teams from $285 per person · no
+              GST added
+            </p>
           </div>
           <div className="overflow-hidden border border-border bg-ink-2">
             <Image
@@ -216,12 +197,64 @@ export default function HomePage() {
             title="Recent work from Sydney shoots"
           />
           <div className="mt-10">
-            <Gallery images={featured} />
+            <Gallery
+              images={featured}
+              schemaName={`Recent Sydney portrait and headshot work by ${site.name}`}
+            />
           </div>
           <div className="mt-10 text-center">
             <Button href="/portfolio" variant="outline">
               View the Full Portfolio
             </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* Pricing entry point. The homepage previously showed no prices at all,
+          on a site whose single biggest commercial advantage is that its
+          pricing is published and final. */}
+      <section className="section bg-ink">
+        <Container>
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <Eyebrow>Investment</Eyebrow>
+              <h2 className="font-display mt-5 text-3xl text-cream sm:text-4xl">
+                Published prices, and the quote is the invoice
+              </h2>
+              <p className="mt-5 text-[1.02rem] leading-relaxed text-muted">
+                Corporate headshots start at $395, the 90-minute Professional
+                session is $695, and team headshot days are $285 per person for
+                five or more — including travel across Greater Sydney and the
+                on-site mobile studio.
+              </p>
+              <p className="mt-4 text-[1.02rem] leading-relaxed text-muted">
+                Nick Brand Photography is not registered for GST, so nothing is
+                added at invoice. Most Sydney studios quote ex-GST, which is
+                worth knowing when you compare.
+              </p>
+              <div className="mt-8" data-cta="home-pricing">
+                <Button href="/corporate-headshot-pricing-sydney">
+                  What Headshots Cost in Sydney
+                </Button>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {[
+                { p: "$395", l: "Individual — Essential, 45 min" },
+                { p: "$695", l: "Individual — Professional, 90 min" },
+                { p: "$285", l: "Per person — teams of 5+" },
+              ].map((row) => (
+                <div
+                  key={row.l}
+                  className="flex items-baseline justify-between gap-6 border border-border bg-surface px-6 py-5"
+                >
+                  <span className="font-display text-3xl text-gold">
+                    {row.p}
+                  </span>
+                  <span className="text-right text-sm text-muted">{row.l}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </Container>
       </section>

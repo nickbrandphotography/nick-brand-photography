@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTiers } from "@/lib/pricing";
 import { bookingHref } from "@/lib/booking";
+import { site } from "@/lib/site";
 import { Container, SectionHeading } from "./Section";
 
 /**
@@ -42,7 +43,7 @@ export default function PricingCards({
           title={title}
           lead={
             lead ??
-            "Transparent pricing. Every session includes professional editing and a private online gallery."
+            "Published prices, and the price you are quoted is the price you are invoiced. Every session includes professional editing and a private online gallery."
           }
         />
 
@@ -88,6 +89,7 @@ export default function PricingCards({
               </ul>
 
               <Link
+                data-cta="pricing-card"
                 href={bookingHref(tier.sessionTypeId)}
                 className={`mt-8 inline-flex items-center justify-center px-6 py-3.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] transition-colors ${
                   tier.highlight
@@ -101,9 +103,12 @@ export default function PricingCards({
           ))}
         </div>
 
-        <p className="mt-8 text-xs text-faint">
-          Prices in AUD. Custom and ongoing-retainer arrangements are available
-          on enquiry.
+        {/* Business buyers assume an advertised price is ex-GST, because most
+            Sydney studios quote that way. Saying it plainly is a genuine
+            advantage, not fine print. */}
+        <p className="mt-8 max-w-3xl text-xs leading-relaxed text-faint">
+          {site.priceNote} Custom and ongoing-retainer arrangements are
+          available on enquiry.
         </p>
       </Container>
     </section>

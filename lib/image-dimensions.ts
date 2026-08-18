@@ -1,8 +1,12 @@
 /**
- * Intrinsic pixel dimensions for every photo in /public/images.
- * Generated from the source files. Used so next/image can render each photo at
- * its true aspect ratio (no cropping, no layout shift). Keyed by the image path
- * without extension. Regenerate if you add/replace images.
+ * GENERATED FILE — do not edit by hand.
+ * Run `npm run ingest` to regenerate after adding or replacing images.
+ *
+ * Holds two things read from the actual contents of /public/images:
+ *   - intrinsic pixel dimensions, so next/image renders every photo at its true
+ *     aspect ratio (no cropping, no layout shift);
+ *   - how many numbered images each silo contains, so lib/images.ts never has a
+ *     hand-maintained `count:` that can drift from reality.
  */
 export const imageDimensions: Record<string, [number, number]> = {
   "/images/corporate-headshots/corporate-headshot-sydney-01": [1333, 2000],
@@ -139,7 +143,28 @@ export const imageDimensions: Record<string, [number, number]> = {
   "/images/about/nick-brand-photographer-sydney": [2000, 1334],
 };
 
+
+/** Number of sequentially-numbered images present in each silo. */
+export const siloCounts: Record<string, number> = {
+  "actor-headshots": 6,
+  "corporate-events": 0,
+  "corporate-headshots": 49,
+  "creative-portraits": 1,
+  "family": 18,
+  "model-portfolios": 20,
+  "musician-portraits": 10,
+  "personal-branding": 2,
+  "singer-portraits": 17,
+  "sports-portraits": 8,
+  "team-headshots": 0,
+};
+
 /** Look up intrinsic [width, height] for an image path (no extension). */
 export function getDimensions(pathNoExt: string): [number, number] {
   return imageDimensions[pathNoExt] ?? [2000, 2000];
+}
+
+/** How many images a silo actually has on disk. */
+export function getSiloCount(silo: string): number {
+  return siloCounts[silo] ?? 0;
 }

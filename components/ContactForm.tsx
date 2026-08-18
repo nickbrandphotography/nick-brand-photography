@@ -8,12 +8,13 @@
  * the component shows a phone/email fallback instead of a broken form.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { site } from "@/lib/site";
+import { trackEnquiry } from "@/lib/analytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-const SESSION_OPTIONS = [
+export const SESSION_OPTIONS = [
   "General enquiry",
   "Corporate headshots",
   "Personal branding",
@@ -23,10 +24,34 @@ const SESSION_OPTIONS = [
   "Corporate event",
 ];
 
+/** Maps a service page slug to the matching dropdown option. */
+const SERVICE_TO_INTEREST: Record<string, string> = {
+  "corporate-headshots-sydney": "Corporate headshots",
+  "linkedin-headshots-sydney": "Corporate headshots",
+  "executive-portraits-sydney": "Corporate headshots",
+  "team-headshots-sydney": "Team / office headshots",
+  "personal-branding-sydney": "Personal branding",
+  "actor-headshots-sydney": "Actor / model portfolio",
+  "corporate-event-photographer-sydney": "Corporate event",
+  "family-photography-sydney": "Family session",
+  "band-photographer-sydney": "General enquiry",
+};
+
 const fieldClass =
   "mt-1.5 w-full border border-border bg-ink px-3.5 py-2.5 text-sm text-cream placeholder:text-faint transition-colors focus:border-gold focus:outline-none";
 
-export default function ContactForm() {
+export default function ContactForm({
+  /** Preselect the session type — service pages pass their own. */
+  defaultInterest,
+  /** Drops the phone field and shortens the message box, for in-page use. */
+  compact = false,
+  /** Where the form lives, so GA4 can attribute the enquiry. */
+  source = "contact-page",
+}: {
+  defaultInterest?: string;
+  compact?: boolean;
+  source?: string;
+} = {}) {
   const hasKey = site.web3formsKey.trim().length > 0;
 
   const [status, setStatus] = useState<Status>("idle");
@@ -34,9 +59,24 @@ export default function ContactForm() {
     name: "",
     email: "",
     phone: "",
-    interest: SESSION_OPTIONS[0],
+    interest: defaultInterest ?? SESSION_OPTIONS[0],
     message: "",
   });
+
+  /**
+   * Preselect the session type from `?service=<slug>` — the "Get a Team Quote"
+   * buttons on the team, executive, event and pricing pages carry it.
+   *
+   * Read here rather than in the page's `searchParams`, because doing it
+   * server-side would opt /contact out of static generation for every visitor
+   * just to set a dropdown default.
+   */
+  useEffect(() => {
+    if (defaultInterest) return;
+    const slug = new URLSearchParams(window.location.search).get("service");
+    const mapped = slug ? SERVICE_TO_INTEREST[slug] : undefined;
+    if (mapped) setForm((f) => ({ ...f, interest: mapped }));
+  }, [defaultInterest]);
 
   function update(patch: Partial<typeof form>) {
     setForm({ ...form, ...patch });
@@ -54,7 +94,8 @@ export default function ContactForm() {
         },
         body: JSON.stringify({
           access_key: site.web3formsKey,
-          subject: `New enquiry from ${site.domain}`,
+          subject: `New enquiry from ${site.domain} — ${form.interest}`,
+          page: source,
           from_name: form.name,
           name: form.name,
           email: form.email,
@@ -65,6 +106,7 @@ export default function ContactForm() {
         }),
       });
       const data: { success?: boolean } = await res.json();
+      if (data.success) trackEnquiry(form.interest, source);
       setStatus(data.success ? "success" : "error");
     } catch {
       setStatus("error");
@@ -196,7 +238,7 @@ export default function ContactForm() {
         </span>
         <textarea
           required
-          rows={5}
+          rows={compact ? 3 : 5}
           value={form.message}
           onChange={(e) => update({ message: e.target.value })}
           className={`${fieldClass} resize-none`}
@@ -218,8 +260,8 @@ export default function ContactForm() {
         {status === "submitting" ? "Sending…" : "Send message"}
       </button>
       <p className="mt-3 text-center text-[0.72rem] text-faint">
-        No obligation, no hard sell — Nick will reply with honest advice and a
-        clear quote.
+        Nick replies personally, usually within one business day. No obligation,
+        no hard sell — just honest advice and a clear quote.
       </p>
     </form>
   );

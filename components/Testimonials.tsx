@@ -29,7 +29,8 @@ function Stars() {
  */
 export default function Testimonials({
   limit = 3,
-  intervalMs = 6000,
+  // Was 6s, which moved a quote out from under someone mid-sentence.
+  intervalMs = 11000,
 }: {
   limit?: number;
   intervalMs?: number;

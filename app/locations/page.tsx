@@ -25,6 +25,21 @@ export const metadata: Metadata = {
       "Corporate headshots, personal branding and team photography across Greater Sydney — on-site at your office or at the Lane Cove studio.",
     url: absoluteUrl("/locations"),
     type: "website",
+    images: [
+      {
+        url: "/images/og/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Photographer service areas across Sydney — Nick Brand Photography",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Photographer Service Areas Across Sydney`,
+    description:
+      "Corporate headshots, personal branding and team photography across Greater Sydney — on-site at your office or at the Lane Cove studio.",
+    images: ["/images/og/og-default.jpg"],
   },
 };
 

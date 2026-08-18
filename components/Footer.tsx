@@ -64,11 +64,13 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Areas served */}
+          {/* Areas served — all of them. `locations.slice(0, 6)` meant the
+              other seven suburb pages had exactly one inbound internal link
+              on the entire site, from /locations. */}
           <div>
             <p className="eyebrow">Areas We Serve</p>
             <ul className="mt-5 space-y-2.5">
-              {locations.slice(0, 6).map((l) => (
+              {locations.map((l) => (
                 <li key={l.slug}>
                   <Link
                     href={`/locations/${l.slug}`}
@@ -111,10 +113,26 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/corporate-headshot-pricing-sydney"
+                  className="text-sm text-muted transition-colors hover:text-cream"
+                >
+                  Pricing Guide
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/blog"
                   className="text-sm text-muted transition-colors hover:text-cream"
                 >
                   Tips &amp; Guides
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/faq"
+                  className="text-sm text-muted transition-colors hover:text-cream"
+                >
+                  FAQs
                 </Link>
               </li>
               <li>
@@ -131,6 +149,14 @@ export default function Footer() {
                   className="text-sm text-muted transition-colors hover:text-cream"
                 >
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-sm text-muted transition-colors hover:text-cream"
+                >
+                  Terms &amp; Insurance
                 </Link>
               </li>
               <li>

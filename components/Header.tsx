@@ -49,22 +49,32 @@ export default function Header() {
               </span>
             </button>
 
-            {servicesOpen && (
-              <div className="absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3">
-                <div className="grid gap-1 border border-border bg-ink-2 p-3 shadow-xl">
-                  {services.map((s) => (
-                    <Link
-                      key={s.slug}
-                      href={`/${s.slug}`}
-                      onClick={() => setServicesOpen(false)}
-                      className="px-3 py-2 text-[0.82rem] text-muted transition-colors hover:bg-surface hover:text-cream"
-                    >
-                      {s.navLabel}
-                    </Link>
-                  ))}
-                </div>
+            {/* Rendered into the HTML at all times and hidden with CSS.
+                It used to be `{servicesOpen && (…)}`, which meant not one of the
+                nine service links existed in the server-rendered markup — the
+                crawled header contained only About, Blog, Contact and Book Now,
+                so every service link on the site came from the footer. */}
+            <div
+              className={`absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3 transition-opacity duration-150 ${
+                servicesOpen
+                  ? "visible opacity-100"
+                  : "invisible opacity-0"
+              }`}
+            >
+              <div className="grid gap-1 border border-border bg-ink-2 p-3 shadow-xl">
+                {services.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/${s.slug}`}
+                    tabIndex={servicesOpen ? 0 : -1}
+                    onClick={() => setServicesOpen(false)}
+                    className="px-3 py-2 text-[0.82rem] text-muted transition-colors hover:bg-surface hover:text-cream"
+                  >
+                    {s.navLabel}
+                  </Link>
+                ))}
               </div>
-            )}
+            </div>
           </div>
 
           {mainNav.map((item) => (
@@ -76,6 +86,15 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
+          {/* Phone in the desktop header — it was previously reachable only
+              from the mobile menu, hiding the highest-intent action from every
+              desktop visitor. */}
+          <a
+            href={`tel:${site.phoneIntl}`}
+            className="hidden whitespace-nowrap text-[0.82rem] tracking-wide text-gold transition-colors hover:text-gold-soft xl:inline"
+          >
+            {site.phone}
+          </a>
           <Link
             href="/book"
             className="whitespace-nowrap bg-gold px-5 py-2.5 text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-gold-soft"

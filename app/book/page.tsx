@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ";
 import JsonLd from "@/components/JsonLd";
 import BookingFlow from "@/components/BookingFlow";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { bookingFaqs } from "@/lib/faqs";
 
 const crumbs = [
   { name: "Home", path: "/" },
@@ -59,29 +60,6 @@ const steps = [
     n: "03",
     title: "Show up and relax",
     text: "Come to the Lane Cove studio, or have Nick bring a mobile studio to your office. Honest direction means you don't need to know how to pose.",
-  },
-];
-
-const bookingFaqs = [
-  {
-    q: "How far in advance should I book?",
-    a: "Individual headshot and personal branding sessions can often be booked within the same week. Team headshot days and corporate event coverage are best booked two to three weeks ahead so the date and crew can be locked in.",
-  },
-  {
-    q: "What happens after I book online?",
-    a: "You'll receive an instant confirmation, and Nick will follow up to confirm the shoot details — location, number of people, wardrobe and the look you're after. Nothing is left to guesswork on the day.",
-  },
-  {
-    q: "Can you photograph our team at our own office?",
-    a: "Yes. On-site days run across Greater Sydney with a full mobile studio set up in your workplace, so staff are photographed consistently with minimal disruption to the working day.",
-  },
-  {
-    q: "What if I need to reschedule?",
-    a: "Plans change — just let Nick know as early as you can and the session will be moved to a new time. You can reschedule directly from your booking confirmation email.",
-  },
-  {
-    q: "Do you prefer a quick chat before booking?",
-    a: `Absolutely. If you'd rather talk through your shoot first, call ${site.phone} or email ${site.email} and Nick will help you choose the right session before you reserve a time.`,
   },
 ];
 

@@ -18,8 +18,45 @@ export type Location = {
   localSignals: string[];
   /** travel / logistics note */
   logistics: string;
+  /**
+   * How the suburb is actually reached, and what that means for a session.
+   * Added because all twelve pages measured ~53% duplicate against each other —
+   * the shared pricing, gallery, testimonials and CTA left only ~250–330 words
+   * of genuinely unique copy per page. Travel and access genuinely differ by
+   * precinct, so this is real local detail rather than padding.
+   */
+  gettingThere?: string;
+  /** What an on-site mobile studio needs in this kind of building. */
+  onSiteNote?: string;
   faqs: FAQ[];
 };
+
+/**
+ * Neighbouring suburbs, for contextual internal links. Each location page
+ * previously linked out to exactly one other page on the whole site.
+ */
+const NEARBY: Record<string, string[]> = {
+  "lane-cove": ["st-leonards", "crows-nest", "chatswood"],
+  "sydney-cbd": ["barangaroo", "pyrmont", "north-sydney"],
+  "north-sydney": ["st-leonards", "crows-nest", "mosman"],
+  "surry-hills": ["sydney-cbd", "pyrmont", "bondi-junction"],
+  parramatta: ["macquarie-park", "chatswood", "sydney-cbd"],
+  chatswood: ["st-leonards", "macquarie-park", "lane-cove"],
+  barangaroo: ["sydney-cbd", "pyrmont", "north-sydney"],
+  pyrmont: ["sydney-cbd", "barangaroo", "surry-hills"],
+  "bondi-junction": ["sydney-cbd", "surry-hills", "mosman"],
+  "st-leonards": ["crows-nest", "lane-cove", "north-sydney"],
+  "crows-nest": ["st-leonards", "north-sydney", "lane-cove"],
+  mosman: ["north-sydney", "crows-nest", "chatswood"],
+};
+
+/** The two or three nearest suburbs that also have a landing page. */
+export function nearbyLocations(slug: string): Location[] {
+  return (NEARBY[slug] ?? [])
+    .map((s) => locations.find((l) => l.slug === s))
+    .filter((l): l is Location => Boolean(l))
+    .slice(0, 3);
+}
 
 export const locations: Location[] = [
   {
@@ -42,6 +79,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The studio is at 84 Centennial Avenue, Lane Cove — five minutes from the village centre with parking on site. On-site headshot days bring the mobile studio to Lane Cove offices.",
+    gettingThere:
+      "Because this is the home studio, Lane Cove sessions carry no travel time at all. Centennial Avenue sits just off Epping Road, with on-site parking at the door and buses along Longueville Road a short walk away. A single headshot session usually takes less time out of the day than the drive to a city studio would.",
+    onSiteNote:
+      "Lane Cove businesses are mostly street-level offices and small suites, which suits a mobile studio well — a meeting room or a cleared corner of roughly three metres by three metres is enough, and gear comes straight in from the car rather than through a loading dock.",
     faqs: [
       {
         q: "Where is the studio in Lane Cove?",
@@ -78,6 +119,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "On-site headshot days come to your CBD office with a mobile studio. For individual sessions, the Lane Cove studio is roughly 15 minutes from the city by car and easily reached from the lower North Shore.",
+    gettingThere:
+      "Lane Cove to the CBD is a straight run over the Harbour Bridge or through the tunnel — around 15 minutes outside peak, longer in it. For staff already in the city, the studio is also reachable by bus down Epping Road. Most CBD clients find it simpler to have the studio come to them, which is why the majority of city work is run on-site.",
+    onSiteNote:
+      "CBD towers need a little more planning than a street-level office: building access for a visitor, a booked lift or loading dock for the gear, and a bookable meeting room for the two-hour-plus window a team day needs. Give the building manager notice and the setup itself takes about thirty minutes.",
     faqs: [
       {
         q: "Do you come to offices in the Sydney CBD?",
@@ -114,6 +159,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The Lane Cove studio is a short drive from North Sydney, making individual sessions quick to attend. On-site team days bring the mobile studio to your office.",
+    gettingThere:
+      "North Sydney sits about ten minutes from the Lane Cove studio along Epping Road and the Pacific Highway — close enough that an individual session fits comfortably inside a long lunch break, without crossing the bridge or paying for city parking.",
+    onSiteNote:
+      "The North Sydney core is dense with mid-rise towers around Miller and Berry Streets. As with the CBD, the practical requirements are visitor access, a lift that will take equipment cases, and one meeting room held for the duration. Street parking is scarce, so loading-dock access is worth arranging in advance.",
     faqs: [
       {
         q: "Is the studio close to North Sydney?",
@@ -150,6 +199,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "Personal branding and headshot sessions can be photographed on-location around Surry Hills or at the Lane Cove studio, with on-site team days available for agencies.",
+    gettingThere:
+      "Surry Hills is a twenty-minute drive from Lane Cove outside peak, or a short walk from Central for anyone travelling by train. Because so much of the work here is on-location, the practical question is usually less about travel and more about which streets and interiors suit the brand.",
+    onSiteNote:
+      "Agency spaces in Surry Hills are often converted terraces and warehouses — high ceilings and character, but narrow stairs and limited floor space. A backdrop setup needs about three metres by three metres of clear floor; where that isn't available, the area's brick walls, laneways and studio interiors work as natural backgrounds instead, which usually suits a creative business better anyway.",
     faqs: [
       {
         q: "Do you photograph creative teams and agencies in Surry Hills?",
@@ -186,6 +239,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "On-site headshot days bring the full mobile studio to your Parramatta office, so a team is photographed in one visit without travelling into the Sydney CBD.",
+    gettingThere:
+      "Parramatta is around 35 minutes from the Lane Cove studio via the M2, so for anything beyond a single portrait it makes far more sense for the studio to travel than for staff to. A whole team's worth of travel time — thirty people each losing an hour to the trip into the city — dwarfs the cost of an on-site day.",
+    onSiteNote:
+      "The Parramatta CBD mixes newer towers with government and institutional buildings, several of which need visitor passes arranged ahead of time. Confirm building access and a bookable room when the date is set, and allow thirty minutes for setup before the first person is due.",
     faqs: [
       {
         q: "Do you travel to Parramatta for headshots?",
@@ -222,6 +279,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The Lane Cove studio is a short drive from Chatswood, so individual sessions are easy to attend. On-site headshot days bring the mobile studio to your office.",
+    gettingThere:
+      "Chatswood is roughly ten minutes from the Lane Cove studio by car. It is also one of the best-connected suburbs on the North Shore — train, metro and bus all meet at the interchange — so staff travelling from further up the line can reach a session easily either way.",
+    onSiteNote:
+      "Most Chatswood offices sit in towers above or beside the interchange, with commercial parking underneath. Book a bay or a dock slot for unloading, arrange a visitor pass, and hold one meeting room for the session. Medical and allied health practices in the area often prefer an early-morning slot before consulting starts.",
     faqs: [
       {
         q: "Is the studio near Chatswood?",
@@ -258,6 +319,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "On-site headshot days come to your Barangaroo office with a mobile studio. The Lane Cove studio is around 15 minutes away by car for individual sessions, with easy access from the lower North Shore.",
+    gettingThere:
+      "Barangaroo is about fifteen minutes from Lane Cove via the Harbour Tunnel, or a short walk from Wynyard for anyone already in the city. The Barangaroo metro station has made the precinct easier to reach from the North Shore than it once was.",
+    onSiteNote:
+      "The International Towers are tightly managed buildings: expect to arrange a visitor pass, a goods-lift booking and a nominated contact on the floor before the day. Once inside, the floors themselves are ideal — large, well-proportioned meeting rooms with plenty of clear space, and in several cases harbour light that works beautifully for executive portraits without any backdrop at all.",
     faqs: [
       {
         q: "Do you photograph headshots at the International Towers?",
@@ -294,6 +359,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "Headshot and personal branding sessions can be photographed on-location around Pyrmont and the harbourside, or at the Lane Cove studio. On-site team headshot days are simple to arrange for larger offices.",
+    gettingThere:
+      "Pyrmont is about twenty minutes from Lane Cove via the Anzac Bridge, and walkable from the western edge of the CBD. Parking on the peninsula is tight, so on-site days are planned around a loading bay or a booked commercial space rather than street parking.",
+    onSiteNote:
+      "Converted wharf and warehouse offices around Darling Island tend to have the two things a mobile studio wants most: floor space and ceiling height. Open-plan layouts mean it is worth picking a corner away from foot traffic so the queue doesn't run through someone's stand-up. The harbourside and the older sandstone streets nearby give branding sessions a genuinely different backdrop from a studio wall.",
     faqs: [
       {
         q: "Do you photograph technology and media teams in Pyrmont?",
@@ -330,6 +399,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "On-site headshot days bring the full mobile studio to your Bondi Junction office. For individual sessions, the Lane Cove studio is reachable across the harbour, with parking close by.",
+    gettingThere:
+      "Bondi Junction is around half an hour from Lane Cove through the tunnel and out along the Eastern Distributor. For Eastern Suburbs teams that usually makes an on-site day the obvious choice — the alternative is every staff member making the same trip individually.",
+    onSiteNote:
+      "The office towers above the interchange have commercial parking and lift access, which makes load-in straightforward, but meeting rooms can be in short supply — book one for the full window rather than hoping to find one on the day. Medical and specialist practices in the area often prefer a session scheduled around consulting hours.",
     faqs: [
       {
         q: "Do you travel to Bondi Junction for headshots?",
@@ -366,6 +439,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The Lane Cove studio is only a few minutes from St Leonards, so individual sessions barely interrupt the working day. On-site headshot days bring the mobile studio directly to your office.",
+    gettingThere:
+      "St Leonards is about five minutes from the Lane Cove studio — close enough that individual sessions are genuinely a lunch-break errand rather than an afternoon off. There is on-site parking at the studio, which matters here, because parking around the hospital precinct rarely is.",
+    onSiteNote:
+      "The health precinct has its own constraints: clinical spaces are not always available, corridors are busy, and consulting rooms are usually too small for a backdrop. Where a practice can't clear three metres by three metres, a boardroom in a neighbouring Pacific Highway office or a short walk to the studio is normally the simpler answer.",
     faqs: [
       {
         q: "How close is the studio to St Leonards?",
@@ -402,6 +479,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The Lane Cove studio is only minutes from Crows Nest. Personal branding and headshot sessions can also be photographed on-location around the Willoughby Road precinct, with on-site team days available.",
+    gettingThere:
+      "Crows Nest is five to ten minutes from the Lane Cove studio, and the new metro station has put it within a short ride of both the CBD and Chatswood. For a founder or consultant, that usually means a session can be slotted into a morning without rearranging the day around it.",
+    onSiteNote:
+      "Willoughby Road businesses tend to be shopfronts, studios and small first-floor suites — characterful, but rarely with a spare three-by-three metre room. In practice most Crows Nest work is either shot at the nearby studio or on-location using the precinct itself, which suits a founder-led brand better than a plain backdrop.",
     faqs: [
       {
         q: "Is the studio near Crows Nest?",
@@ -438,6 +519,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "On-site headshot days bring the full mobile studio to your Macquarie Park campus, so a large team is photographed without travelling. The Lane Cove studio is a short drive away for individual sessions.",
+    gettingThere:
+      "Macquarie Park is around fifteen to twenty minutes from the Lane Cove studio up Epping Road and the M2, with metro stations serving the precinct. Campuses here are spread out, so it is worth naming the specific building rather than just the address when a date is booked.",
+    onSiteNote:
+      "Corporate campuses are the easiest kind of on-site day to run well: dedicated visitor parking, large bookable rooms and, usually, a facilities contact who has done this before. The variable is scale — a headcount in the hundreds needs a schedule built in advance and often more than one day, so give as much notice as you can.",
     faqs: [
       {
         q: "Do you run on-site headshot days in Macquarie Park?",
@@ -474,6 +559,10 @@ export const locations: Location[] = [
     ],
     logistics:
       "The Lane Cove studio is a short drive from Mosman, making individual sessions easy to attend. On-location sessions can also be arranged around Mosman for branding shoots and small teams.",
+    gettingThere:
+      "Mosman is fifteen to twenty minutes from the Lane Cove studio across the Spit or via Military Road, depending on traffic. Studio parking is on site, which is worth knowing if you have ever tried to park near Bridgepoint at midday.",
+    onSiteNote:
+      "Mosman work skews towards individuals and small practices rather than large on-site days — a consultant refreshing a profile, a two-partner firm, a local business owner. Those are usually simplest at the studio, where lighting and background are already set, though on-location sessions around the harbour foreshore work well for branding libraries.",
     faqs: [
       {
         q: "Is the studio close to Mosman?",

@@ -7,10 +7,44 @@
 import { site, absoluteUrl } from "./site";
 import { testimonials, aggregateRating } from "./testimonials";
 import type { FAQ, Service } from "./services";
-import { getTiers } from "./pricing";
+import { services } from "./services";
+import { locations } from "./locations";
+import { getTiers, pricingGroups } from "./pricing";
 
 const ORG_ID = `${site.url}/#business`;
 const PERSON_ID = `${site.url}/#nick`;
+
+/** Real min/max across every published tier, so priceRange isn't a vague "$$$". */
+function priceRange(): string {
+  const all = Object.values(pricingGroups).flatMap((g) =>
+    g.tiers.map((t) => t.priceValue),
+  );
+  return `$${Math.min(...all)}-$${Math.max(...all)}`;
+}
+
+/**
+ * Where Nick actually works. A single {"@type":"City","name":"Sydney"} was the
+ * thinnest possible expression of a Greater Sydney service area — this names the
+ * suburbs that have their own landing pages plus a radius around the studio.
+ */
+function areaServed() {
+  return [
+    { "@type": "City", name: "Sydney", address: { "@type": "PostalAddress", addressRegion: "NSW", addressCountry: "AU" } },
+    {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: site.geo.lat,
+        longitude: site.geo.lng,
+      },
+      geoRadius: "50000",
+    },
+    ...locations.map((l) => ({
+      "@type": "Place" as const,
+      name: `${l.suburb}, NSW`,
+    })),
+  ];
+}
 
 /** LocalBusiness / ProfessionalService — the core entity for the whole site. */
 export function localBusinessSchema() {
@@ -19,9 +53,14 @@ export function localBusinessSchema() {
     "@type": ["ProfessionalService", "LocalBusiness"],
     "@id": ORG_ID,
     name: site.name,
+    alternateName: site.shortName,
     description: site.description,
+    slogan: site.tagline,
     url: site.url,
-    logo: absoluteUrl("/images/og/logo.png"),
+    logo: {
+      "@type": "ImageObject",
+      url: absoluteUrl("/images/og/logo.png"),
+    },
     image: [
       absoluteUrl("/images/about/nick-brand-photographer-sydney.jpg"),
       absoluteUrl("/images/corporate-headshots/corporate-headshot-sydney-02.jpg"),
@@ -29,9 +68,11 @@ export function localBusinessSchema() {
     ],
     telephone: site.phoneIntl,
     email: site.email,
-    priceRange: "$$$",
+    priceRange: priceRange(),
+    currenciesAccepted: "AUD",
     hasMap: site.social.google,
     founder: { "@id": PERSON_ID },
+    employee: { "@id": PERSON_ID },
     address: {
       "@type": "PostalAddress",
       streetAddress: site.address.street,
@@ -45,7 +86,30 @@ export function localBusinessSchema() {
       latitude: site.geo.lat,
       longitude: site.geo.lng,
     },
-    areaServed: { "@type": "City", name: "Sydney" },
+    areaServed: areaServed(),
+    // Topic association — what this business is actually expert in.
+    knowsAbout: [
+      "Corporate headshot photography",
+      "Personal branding photography",
+      "Executive portrait photography",
+      "On-site team and office headshots",
+      "LinkedIn profile photography",
+      "Actor headshots and model portfolios",
+      "Corporate event photography",
+    ],
+    // Ties the nine standalone Service nodes together as one catalogue.
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Photography services in Sydney",
+      itemListElement: services.map((s) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: s.h1,
+          url: absoluteUrl(`/${s.slug}`),
+        },
+      })),
+    },
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: [
@@ -64,6 +128,14 @@ export function localBusinessSchema() {
       site.social.linkedin,
       site.social.google,
     ].filter(Boolean),
+    /**
+     * Honest, real Google reviews. Note that Google has treated self-serving
+     * reviews — reviews about the entity, published by the entity — as
+     * ineligible for review rich results since 2019, so this will not produce
+     * stars in the SERP. It stays because it is accurate and because it helps
+     * answer engines understand the business. Do not spend time optimising it,
+     * and never inflate reviewCount.
+     */
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: aggregateRating.ratingValue,
@@ -92,10 +164,17 @@ export function personSchema() {
     name: site.founder,
     jobTitle: "Photographer",
     description:
-      "Sydney-based commercial and portrait photographer with over 20 years of experience.",
+      "Sydney-based commercial and portrait photographer with over 20 years of experience, specialising in corporate headshots, executive portraits and personal branding photography.",
     image: absoluteUrl("/images/about/nick-brand-photographer-sydney.jpg"),
     worksFor: { "@id": ORG_ID },
     url: absoluteUrl("/about"),
+    knowsAbout: [
+      "Corporate headshot photography",
+      "Personal branding photography",
+      "Executive portraiture",
+      "Studio lighting",
+      "On-location portrait photography",
+    ],
     sameAs: [site.social.instagram, site.social.linkedin].filter(Boolean),
   };
 }
@@ -109,6 +188,9 @@ export function serviceSchema(service: Service) {
     description: service.metaDescription,
     serviceType: service.navLabel,
     url: absoluteUrl(`/${service.slug}`),
+    // Just the city here. The full suburb list lives on the LocalBusiness node,
+    // which is now emitted sitewide from app/layout.tsx — repeating fourteen
+    // Place entries per Service node only bloats the payload on every page.
     areaServed: { "@type": "City", name: "Sydney" },
     provider: { "@id": ORG_ID },
   };
@@ -131,6 +213,46 @@ export function serviceSchema(service: Service) {
       price: tier.priceValue,
       priceCurrency: "AUD",
       url: absoluteUrl(`/${service.slug}`),
+      availability: "https://schema.org/InStock",
+      seller: { "@id": ORG_ID },
+      // Not GST-registered, so the advertised price is the final price.
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        price: tier.priceValue,
+        priceCurrency: "AUD",
+        valueAddedTaxIncluded: false,
+      },
+    })),
+  };
+}
+
+/**
+ * Service schema for a suburb landing page.
+ *
+ * The 12 location pages previously carried no service, business or place markup
+ * at all — structurally they were FAQ pages that happened to mention a suburb,
+ * which is the opposite of what a local landing page should look like.
+ */
+export function locationServiceSchema(suburb: string, slug: string) {
+  const tiers = getTiers([
+    "headshot-essential",
+    "headshot-professional",
+    "team-quote",
+  ]);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `Corporate headshot photography in ${suburb}`,
+    description: `Corporate headshots, LinkedIn portraits and on-site team headshot days for businesses in ${suburb}, Sydney, by Nick Brand Photography.`,
+    serviceType: "Corporate headshot photography",
+    url: absoluteUrl(`/locations/${slug}`),
+    provider: { "@id": ORG_ID },
+    areaServed: { "@type": "Place", name: `${suburb}, NSW, Australia` },
+    offers: tiers.map((tier) => ({
+      "@type": "Offer",
+      name: tier.name,
+      price: tier.priceValue,
+      priceCurrency: "AUD",
       availability: "https://schema.org/InStock",
       seller: { "@id": ORG_ID },
     })),
@@ -195,13 +317,44 @@ export function imageObjectSchema(path: string, caption: string) {
   };
 }
 
+/**
+ * A gallery of ImageObjects. Previously only hero images carried ImageObject
+ * markup, so the Licensable-badge eligibility applied to roughly 30 of the 132
+ * photographs on the site.
+ */
+export function imageGallerySchema(
+  images: { src: string; alt: string }[],
+  name: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name,
+    associatedMedia: images.map((img) => ({
+      "@type": "ImageObject",
+      contentUrl: absoluteUrl(img.src),
+      caption: img.alt,
+      creditText: site.name,
+      creator: { "@type": "Person", "@id": PERSON_ID, name: site.founder },
+      copyrightNotice: `© ${site.name}`,
+      license: absoluteUrl("/image-licensing"),
+      acquireLicensePage: absoluteUrl("/image-licensing"),
+    })),
+  };
+}
+
 /** WebSite schema — helps establish the entity for search and AI. */
 export function webSiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${site.url}/#website`,
     name: site.name,
     url: site.url,
+    inLanguage: "en-AU",
     publisher: { "@id": ORG_ID },
   };
 }
+
+/** Organization reference for article publishers etc. */
+export const orgRef = { "@id": ORG_ID };

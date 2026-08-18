@@ -69,6 +69,12 @@ const methods = [
   },
 ];
 
+/**
+ * The `?service=<slug>` param that "Get a Team Quote" buttons carry is read
+ * client-side inside ContactForm, deliberately: reading searchParams here would
+ * opt this page out of static generation, and a prefilled dropdown is not worth
+ * making the contact page dynamic for every visitor.
+ */
 export default function ContactPage() {
   return (
     <>
@@ -146,7 +152,7 @@ export default function ContactPage() {
               for and Nick will point you in the right direction.
             </p>
           </div>
-          <ContactForm />
+          <ContactForm source="contact-page" />
         </Container>
       </section>
 

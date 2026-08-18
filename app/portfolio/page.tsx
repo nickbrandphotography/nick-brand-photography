@@ -23,11 +23,20 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: absoluteUrl("/portfolio"),
     type: "website",
+    images: [
+      {
+        url: "/images/og/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Portfolio — Nick Brand Photography, Sydney",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: ["/images/og/og-default.jpg"],
   },
 };
 
@@ -80,7 +89,10 @@ export default function PortfolioPage() {
               ) : null}
             </div>
             <div className="mt-10">
-              <Gallery images={pickImages(cat.picks)} />
+              <Gallery
+                images={pickImages(cat.picks)}
+                schemaName={`${cat.title} — Sydney photography by Nick Brand`}
+              />
             </div>
           </Container>
         </section>

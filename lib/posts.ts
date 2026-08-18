@@ -36,6 +36,225 @@ export type Post = {
 
 export const posts: Post[] = [
   {
+    slug: "ai-headshots-vs-professional-photographer-sydney",
+    title: "AI Headshots vs a Professional Photographer: an Honest Comparison",
+    metaTitle:
+      "AI Headshots vs a Real Photographer in Sydney — Honest Comparison (2026)",
+    metaDescription:
+      "A straight comparison of AI headshot generators and professional photography in 2026 — what AI does well, where it fails, the rights problem nobody mentions, and how to choose.",
+    excerpt:
+      "AI headshot tools are cheap, fast and genuinely good at some things. Here is where they work, where they fall over, and how to decide — written by a photographer, with the bias declared up front.",
+    category: "Corporate Headshots",
+    date: "2026-08-18",
+    readingTime: "8 min read",
+    heroSilo: "corporate-headshots",
+    heroIndex: 22,
+    intro: [
+      "Let's get the conflict of interest out of the way: this is written by a photographer who sells headshots, so of course there is a bias. The useful thing to do with that is to be specific about where AI headshots genuinely work, rather than pretending they don't — because a comparison that says the competing option is worthless is not a comparison, it's an advert.",
+      "AI headshot generators have improved enormously. For somewhere between $20 and $80 you upload a dozen selfies, wait an hour, and get back a few hundred images of what is recognisably you, in a suit, against a studio background. For a lot of people that is a perfectly reasonable purchase. For others it quietly creates problems that only show up months later.",
+      "Here is an honest breakdown of both.",
+    ],
+    sections: [
+      {
+        heading: "Where AI headshots genuinely work",
+        paragraphs: [
+          "There are situations where an AI headshot is the sensible choice, and it's worth naming them rather than skating past.",
+        ],
+        list: [
+          "You need a profile photo for a personal account and nothing is riding on it commercially.",
+          "You're overseas, remote or otherwise unable to get to a photographer, and the alternative is no photo at all.",
+          "Your budget is genuinely $50, not $500 — in which case a decent AI headshot beats a cropped photo from a wedding, and it isn't close.",
+          "You want to test what a different look might do for you — glasses, no glasses, more formal styling — before committing to a real session.",
+          "You need something today, and today has already started.",
+        ],
+      },
+      {
+        heading: "Where AI headshots fall over",
+        paragraphs: [
+          "The failure modes are consistent, and none of them show up in the sample images on the generator's own homepage.",
+        ],
+        list: [
+          "Likeness drift. The output looks like a cousin of you: subtly younger, subtly more symmetrical, subtly smoother. It reads fine in isolation and strangely once someone meets you.",
+          "Hands, ears, collars, glasses and jewellery. The details AI still gets wrong are exactly the details a viewer's eye lands on when something feels off.",
+          "Team consistency. This is the big one. Thirty people running the same tool produce thirty different lighting setups, thirty different backgrounds and thirty different levels of AI-ness. There is no way to make them match.",
+          "Recognisability as AI. In 2024 most people couldn't tell. In 2026 a lot of people can, and the audience most likely to spot it — recruiters, clients, other professionals — is exactly the audience you made the photo for.",
+          "Rights. Most generators' terms are vague about commercial use, and some assert broad licences over what you upload. Read them before putting the output on a company website.",
+        ],
+      },
+      {
+        heading: "The team problem, in detail",
+        paragraphs: [
+          "For an individual, the AI-versus-real decision is a matter of taste and budget. For a company it usually isn't, because the thing a team page has to do is look like one team.",
+          "A page where five people were photographed professionally, ten used an AI tool and the rest cropped something from a conference is not a page that says 'we pay attention to detail'. It says the opposite, on the exact page you built to say the opposite.",
+          "The comparison also gets less flattering to AI once you do the maths at scale. A thirty-person team at $285 per person is $8,550 for a matched set delivered in a single visit. Thirty AI subscriptions at $60 is $1,800 for thirty unmatched sets, plus the internal time spent chasing everyone to upload selfies, plus — in most cases — someone deciding six months later that it needs doing properly anyway.",
+        ],
+      },
+      {
+        heading: "What a real session actually buys you",
+        list: [
+          "Consistency you can extend. The lighting setup is repeatable, so a new starter next March matches the people photographed today.",
+          "A likeness that survives contact with reality — you look like your photograph when you walk into the room.",
+          "Direction on the day. Most of what makes a portrait work is expression and posture, and neither is something you can supply to a generator as an input.",
+          "Files in the crops and resolutions you actually need: LinkedIn's circle, a website banner, a print-resolution annual report.",
+          "Clear commercial rights, in writing.",
+          "Someone to hold accountable if it isn't right.",
+        ],
+      },
+      {
+        heading: "A reasonable way to decide",
+        paragraphs: [
+          "The question isn't really 'is AI good enough'. It's 'what is this photograph doing, and what happens if it's slightly wrong'.",
+          "If the photo is decorative — a personal profile, an internal directory, a placeholder — the stakes are low and AI is a rational choice. If the photo is doing commercial work, where someone is deciding whether to trust you with money, a case, their health or a job, the stakes are different, and so is the calculation.",
+          "And if you're a company photographing more than a handful of people, the deciding factor usually isn't quality at all. It's that consistency is not something a generator can give you.",
+        ],
+      },
+      {
+        heading: "What this means in Sydney, specifically",
+        paragraphs: [
+          "Sydney's professional headshot market runs from roughly $300 for a short individual session to around $950 for a longer one with multiple looks, and $100 to $300 per person for on-site team work. AI tools sit at $20 to $80 per person.",
+          "That gap is real and it is not going to be argued away. What's worth weighing against it is how long the images last, how many places they need to work, and whether they need to match anyone else's.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Are AI headshots good enough for LinkedIn?",
+        a: "For a personal profile, often yes — a well-generated AI headshot is clearly better than no photo or a cropped holiday snap. The two caveats are that the output frequently drifts from your actual likeness, and that a growing number of recruiters and clients can now recognise AI images. If your profile is doing real business development or job-seeking work, a photograph of you is the safer choice.",
+      },
+      {
+        q: "Can you tell the difference between an AI headshot and a real one?",
+        a: "Increasingly, yes. The tells are usually in the details rather than the face: hands, ears, glasses frames, collar and lapel geometry, jewellery, and a slightly plastic evenness to skin and hair. Backgrounds also tend to have a generic studio quality that doesn't quite correspond to any real room.",
+      },
+      {
+        q: "Why can't a company just use AI headshots for the whole team?",
+        a: "Because they won't match. Every person generates their own images with their own selfies, so the lighting, background, crop and degree of stylisation vary from person to person. A team page's entire job is to look like one organisation, and thirty independently generated portraits cannot do that. Consistency, not individual image quality, is the reason on-site team days exist.",
+      },
+      {
+        q: "Do you own the rights to an AI-generated headshot?",
+        a: "It depends entirely on the tool's terms, and they vary a lot. Some grant broad commercial use; others are vague, restrict commercial use, or claim wide licences over the photos you upload to train the model. Copyright in purely AI-generated images is also unsettled in several jurisdictions, including Australia. If the image is going on a company website, read the terms before you publish.",
+      },
+      {
+        q: "How much does a real corporate headshot cost in Sydney compared to AI?",
+        a: "AI headshot tools generally cost $20 to $80 per person. Professional corporate headshots in Sydney typically run $300 to $950 for an individual session, and $100 to $300 per person for on-site team work. Nick Brand Photography charges $395 for an individual Essential session and $285 per person for teams of five or more, with no GST added.",
+      },
+    ],
+    relatedService: "corporate-headshots-sydney",
+  },
+
+  {
+    slug: "how-to-run-a-team-headshot-day",
+    title: "How to Run a Team Headshot Day (a Sydney Office Guide)",
+    metaTitle:
+      "How to Run a Team Headshot Day — Sydney Office Guide | Nick Brand Photography",
+    metaDescription:
+      "A practical guide to organising staff headshots in a Sydney office: room and space requirements, scheduling, the wardrobe email, handling absentees, and what it costs per person.",
+    excerpt:
+      "If organising the headshots has landed on your desk, this is the whole job in one page — the room, the schedule, the email you need to send, and what to do about the three people who are away.",
+    category: "Team Headshots",
+    date: "2026-08-18",
+    readingTime: "7 min read",
+    heroSilo: "corporate-headshots",
+    heroIndex: 25,
+    intro: [
+      "Organising headshots for a whole team is rarely anyone's actual job. It usually lands on an office manager, an EA or someone in marketing, with a vague brief and a deadline attached to a website launch.",
+      "The good news is that it is a genuinely solvable logistics problem, and almost all of the difficulty is in four decisions: the room, the schedule, the email you send beforehand, and what you do about the people who aren't there.",
+    ],
+    sections: [
+      {
+        heading: "Start with the room, not the date",
+        paragraphs: [
+          "A mobile studio needs roughly three metres by three metres of clear floor. That is a fairly ordinary meeting room with the table pushed to one side — it does not need to be the good boardroom.",
+          "What matters more than floor area is what's behind and above. Avoid a room where the only clear wall has a window in it, because strong daylight behind the setup fights the lighting all day. Ceiling height helps. A door that closes helps more than people expect, because a quiet room produces better expressions than a glass box on the main walkway.",
+          "Book the room for the shooting window plus an hour: about thirty minutes to set up before the first person, and twenty to pack down. The most common day-of problem is a room booked for exactly the session length with someone else's stand-up waiting outside.",
+        ],
+      },
+      {
+        heading: "Build the schedule yourself",
+        paragraphs: [
+          "Do not send a shared sign-up sheet and hope. Self-scheduling produces clumps at 9am, gaps at 11, and four people who never book at all.",
+          "Allocate named ten-minute slots and send them out. Turnout is dramatically higher when someone has a time rather than an invitation, and the day finishes faster.",
+        ],
+        list: [
+          "10 people ≈ 2 hours on site",
+          "20 people ≈ 3.5 hours",
+          "30 people ≈ 5 hours",
+          "50 people ≈ a full day",
+          "Add 30 minutes at the start for setup, and a 20-minute gap somewhere in the middle",
+        ],
+      },
+      {
+        heading: "Send the wardrobe email a week ahead",
+        paragraphs: [
+          "This single email measurably improves the whole set, because people who arrive prepared photograph better and take less time. Keep it short.",
+        ],
+        list: [
+          "Wear solid, mid-to-dark colours. Avoid busy patterns, thin stripes and large logos.",
+          "Bring a second option if you're unsure — you can decide on the day.",
+          "Dress one notch above your normal day-to-day.",
+          "Check necklines and collars sit flat, and that jackets fit at the shoulder.",
+          "Bring anything you wear every day — glasses, jewellery — because the photo should look like you at work.",
+        ],
+      },
+      {
+        heading: "Decide the look before the day, not during it",
+        paragraphs: [
+          "Two decisions need making in advance: the background, and whether senior staff get something different.",
+          "A clean, consistent background — white, grey or a dark neutral — is the safe default and the one that ages best. An office environment can look excellent but is harder to keep consistent across fifty people, because the room changes as the light does.",
+          "On seniority: the pattern that works is everyone photographed with the same setup, with partners or executives given an extra, more considered frame for the leadership page. One visit, one consistent look, two levels of output.",
+        ],
+      },
+      {
+        heading: "Plan for the people who aren't there",
+        paragraphs: [
+          "On almost every team day, someone is sick, on leave or stuck in a client meeting. This is normal and it is not a problem unless you treat the day as your only chance.",
+          "Ask the photographer, before you book, how new starters and absentees are handled. The answer you want is that the setup is documented — lighting positions, background, distance, lens — so a matching session can be run later. If the answer is vague, that is the moment to find out, not in March when you've hired six people.",
+        ],
+      },
+      {
+        heading: "Get the paperwork done first",
+        paragraphs: [
+          "For a corporate on-site shoot, three things routinely hold up a booking, and all three can be handled in a single email at the enquiry stage.",
+        ],
+        list: [
+          "A certificate of currency for public liability insurance — building managers and procurement often require it.",
+          "Building access: a visitor pass, and a booked lift or loading dock for the equipment if you're above a few floors.",
+          "Staff consent to be photographed and a plain statement of how the images will be used. Anyone who prefers not to take part simply doesn't.",
+        ],
+      },
+      {
+        heading: "What it costs",
+        paragraphs: [
+          "On-site team headshots in Sydney generally run between $100 and $300 per person, usually falling as headcount rises. Check carefully whether a quote includes travel, mobile studio setup and GST, because those three lines can add 20–30% to a figure that looked cheaper.",
+          "Nick Brand Photography charges $285 per person for teams of five or more, including travel across Greater Sydney, the on-site mobile studio, five edited images per person and invoice billing. No GST is added. A team of thirty is $8,550, and that is the invoiced amount.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "How much space is needed for on-site team headshots?",
+        a: "About three metres by three metres of clear floor — an ordinary meeting room with the table pushed aside is enough. Ceiling height matters more than floor area, and a plain wall with controllable blinds is better than a room whose only clear wall is a window.",
+      },
+      {
+        q: "How long does a team headshot day take?",
+        a: "Roughly ten minutes per person on a rolling schedule, plus about thirty minutes of setup beforehand. As a guide: 10 people takes about two hours, 20 people about three and a half, 30 people about five, and 50 people a full day.",
+      },
+      {
+        q: "What should staff wear for company headshots?",
+        a: "Solid, mid-to-dark colours photograph best. Avoid busy patterns, thin stripes and large logos, which can look distracting or create moiré. Dress one notch above normal day-to-day, bring a second option if unsure, and wear the glasses and jewellery you wear every day so the photo looks like you at work.",
+      },
+      {
+        q: "What happens if someone is away on the headshot day?",
+        a: "They are photographed at a later session in the same style. The setup — lighting positions, background, distance and lens — is documented so it can be repeated, which means absentees and new starters can be added to the team page without reshooting everyone. Ask any photographer how they handle this before you book.",
+      },
+      {
+        q: "Do we need staff consent to photograph employees?",
+        a: "As the employer, you are responsible for obtaining staff consent to be photographed and for how the images are used. Written consent forms and a plain-English usage statement can be supplied ahead of the day so approvals are complete before the session. Anyone who prefers not to be photographed simply isn't.",
+      },
+    ],
+    relatedService: "team-headshots-sydney",
+  },
+
+  {
     slug: "what-to-wear-for-corporate-headshots",
     title: "What to Wear for Corporate Headshots",
     metaTitle:

@@ -31,6 +31,15 @@ export const metadata: Metadata = {
     type: "profile",
     images: [{ url: nickPortrait.jpg, alt: nickPortrait.alt }],
   },
+  // Next does not deep-merge `twitter` across segments — without this, the
+  // About page shipped the homepage's Twitter title and description.
+  twitter: {
+    card: "summary_large_image",
+    title: `About Nick Brand — Sydney Photographer`,
+    description:
+      "Sydney commercial and portrait photographer with 20+ years of experience. Studio in Lane Cove, working across all of Sydney.",
+    images: [nickPortrait.jpg],
+  },
 };
 
 /* Approach values — drawn from the relaxed, outcome-led style on the homepage. */
@@ -117,7 +126,9 @@ export default function AboutPage() {
               </p>
               <p>
                 More than twenty years on, Nick has photographed thousands of
-                people across virtually every industry. What he loves most
+                people across more than 500 sessions, in virtually every
+                industry — a single on-site team day can mean thirty or forty
+                portraits before lunch. What he loves most
                 hasn't changed since that first competition: the reaction — the
                 moment someone sees their photos and realises just how good
                 they can look.

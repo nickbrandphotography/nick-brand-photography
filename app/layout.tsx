@@ -1,9 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import AnalyticsEvents from "@/components/AnalyticsEvents";
 import { site } from "@/lib/site";
+import { localBusinessSchema, webSiteSchema } from "@/lib/schema";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -18,6 +22,15 @@ const inter = Inter({
   display: "swap",
 });
 
+/**
+ * NOTE: there is deliberately NO `alternates.canonical` here.
+ *
+ * A canonical set on the root layout is inherited by any page that forgets to
+ * set its own — which would silently canonicalise that page to the homepage and
+ * drop it from the index. Every route sets its own canonical; keeping the root
+ * free means a missing canonical fails loudly (no tag) rather than silently
+ * (wrong tag).
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -25,7 +38,6 @@ export const metadata: Metadata = {
     template: `%s`,
   },
   description: site.description,
-  alternates: { canonical: site.url },
   openGraph: {
     type: "website",
     siteName: site.name,
@@ -56,6 +68,8 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -65,9 +79,33 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-ink">
+        {/* The business + website entities, on every page. */}
+        <JsonLd data={[localBusinessSchema(), webSiteSchema()]} />
+
         <Header />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />
+
+        {/* Google Analytics 4.
+            Set NEXT_PUBLIC_GA_ID in Vercel (Project → Settings → Environment
+            Variables) to the measurement ID, e.g. G-XXXXXXXXXX. Until it is set
+            nothing is loaded, so local dev and previews stay clean.
+            Conversion events are sent from lib/analytics.ts. */}
+        {GA_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+            <AnalyticsEvents />
+          </>
+        ) : null}
       </body>
     </html>
   );

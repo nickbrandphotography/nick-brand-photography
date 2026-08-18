@@ -51,6 +51,25 @@ export const site = {
     insured: "$20M",
   },
 
+  /**
+   * GST. Nick Brand Photography is not registered for GST, so every published
+   * price is the final price — nothing is added at invoice. This matters for
+   * business buyers, who otherwise assume a quoted price is ex-GST (both
+   * GrayNoise and Gavin Jowitt quote "+ GST"), and it is a genuine advantage
+   * worth stating plainly rather than leaving ambiguous.
+   */
+  gstRegistered: false,
+  priceNote:
+    "All prices are in AUD and are the final price — Nick Brand Photography is not registered for GST, so no GST is added.",
+
+  /**
+   * ABN. Australian business buyers and procurement teams look for this, and
+   * publishing it is a real legitimacy signal (competitors do). Paste the
+   * 11-digit number between the quotes — formatted or unformatted, both work.
+   * While it is empty the ABN row simply doesn't render on /terms.
+   */
+  abn: "",
+
   // Social — used in footer and schema sameAs
   social: {
     instagram: "https://www.instagram.com/nickbrandphotography",
@@ -80,6 +99,11 @@ export const site = {
  * don't fit in the header at any normal screen width; a dropdown does.
  */
 export const mainNav: { label: string; href: string }[] = [
+  // Portfolio and Pricing were previously reachable only from the footer. On a
+  // photography site "see the work" and "what does it cost" are the two things
+  // a visitor looks for first, and neither was in the header.
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Pricing", href: "/corporate-headshot-pricing-sydney" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },

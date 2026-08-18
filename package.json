@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "recrop": "node scripts/recrop-images.mjs"
+    "recrop": "node scripts/recrop-images.mjs",
+    "ingest": "node scripts/ingest-images.mjs"
   },
   "dependencies": {
     "googleapis": "^172.0.0",

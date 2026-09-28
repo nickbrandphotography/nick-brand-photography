@@ -69,6 +69,13 @@ export const viewport: Viewport = {
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// Set in Vercel → Settings → Environment Variables. Each is an independent
+// no-op until its own var is set — turning one on never depends on the others.
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID; // e.g. AW-XXXXXXXXX
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// gtag.js is shared between GA4 and Google Ads — one script load, one or two
+// `gtag('config', …)` calls depending on which are actually set.
+const GTAG_LOADER_ID = GA_ID || GOOGLE_ADS_ID;
 
 export default function RootLayout({
   children,
@@ -86,24 +93,61 @@ export default function RootLayout({
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />
 
-        {/* Google Analytics 4.
-            Set NEXT_PUBLIC_GA_ID in Vercel (Project → Settings → Environment
-            Variables) to the measurement ID, e.g. G-XXXXXXXXXX. Until it is set
-            nothing is loaded, so local dev and previews stay clean.
-            Conversion events are sent from lib/analytics.ts. */}
-        {GA_ID ? (
+        {/* Google Analytics 4 + Google Ads.
+            Set NEXT_PUBLIC_GA_ID to the GA4 measurement ID (G-XXXXXXXXXX) and/or
+            NEXT_PUBLIC_GOOGLE_ADS_ID to the Ads account ID (AW-XXXXXXXXX) in
+            Vercel. Either one on its own is enough to load gtag.js; both can be
+            set together. Until at least one is set nothing is loaded, so local
+            dev and previews stay clean. The conversion event itself — with the
+            NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL Google Ads gives you — fires
+            from the booking confirmation page, not here; see lib/analytics.ts
+            and app/book/confirmed/page.tsx. */}
+        {GTAG_LOADER_ID ? (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_LOADER_ID}`}
               strategy="afterInteractive"
             />
-            <Script id="ga4-init" strategy="afterInteractive">
+            <Script id="gtag-init" strategy="afterInteractive">
               {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${GA_ID}');`}
+${GA_ID ? `gtag('config', '${GA_ID}');` : ""}
+${GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : ""}`}
             </Script>
             <AnalyticsEvents />
+          </>
+        ) : null}
+
+        {/* Meta Pixel.
+            Set NEXT_PUBLIC_META_PIXEL_ID in Vercel to turn this on — until then
+            it's not loaded at all. Fires PageView sitewide (for retargeting
+            audiences) plus a Lead/Schedule event on the booking confirmation
+            page — see lib/analytics.ts. */}
+        {META_PIXEL_ID ? (
+          <>
+            <Script id="meta-pixel-init" strategy="afterInteractive">
+              {`!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${META_PIXEL_ID}');
+fbq('track', 'PageView');`}
+            </Script>
+            <noscript>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                height="1"
+                width="1"
+                alt=""
+                style={{ display: "none" }}
+                src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+              />
+            </noscript>
           </>
         ) : null}
       </body>

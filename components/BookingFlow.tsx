@@ -17,7 +17,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { site } from "@/lib/site";
 import {
   groupedSessionTypes,
@@ -32,28 +31,8 @@ import {
   type TravelZone,
 } from "@/lib/booking";
 
-type Step =
-  | "service"
-  | "datetime"
-  | "details"
-  | "enquiry"
-  | "resuming"
-  | "done";
+type Step = "service" | "datetime" | "details" | "enquiry" | "resuming";
 
-/** What the post-Stripe-redirect confirmation payload looks like once paid. */
-type PaidInfo = {
-  reference: string;
-  manageToken: string;
-  sessionName: string;
-  dateLabel: string;
-  timeLabel: string;
-  locationLabel: string;
-  depositAud: number;
-  totalAud: number;
-  customerName: string;
-  /** Whether a confirmation email actually went out — see lib/email.ts. */
-  emailSent: boolean;
-};
 type LocationMode = "studio" | "onlocation";
 
 type FormState = {
@@ -75,6 +54,40 @@ const EMPTY_FORM: FormState = {
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const AUD = (n: number) => `$${n.toLocaleString("en-AU")}`;
+
+/**
+ * Every completed booking or enquiry ends here — a real navigation, not a
+ * client-side step change, to /book/confirmed. That's deliberate: Google Ads,
+ * Meta Pixel and any future conversion tracker fire on a page load at a
+ * specific URL, not on React state changing in place. See
+ * app/book/confirmed/page.tsx and components/BookingConfirmation.tsx for
+ * where the actual tracking calls happen.
+ */
+function goToConfirmation(params: {
+  type: "booking" | "paid" | "enquiry";
+  service: string;
+  name: string;
+  dateLabel?: string;
+  timeLabel?: string;
+  locationLabel?: string;
+  reference?: string;
+  manageToken?: string;
+  emailSent?: boolean;
+  value?: number;
+}) {
+  const q = new URLSearchParams();
+  q.set("type", params.type);
+  q.set("service", params.service);
+  q.set("name", params.name.trim().split(/\s+/)[0] || "there");
+  if (params.dateLabel) q.set("date", params.dateLabel);
+  if (params.timeLabel) q.set("time", params.timeLabel);
+  if (params.locationLabel) q.set("location", params.locationLabel);
+  if (params.reference) q.set("ref", params.reference);
+  if (params.manageToken) q.set("token", params.manageToken);
+  if (params.emailSent) q.set("emailSent", "1");
+  if (params.value) q.set("value", String(params.value));
+  window.location.assign(`/book/confirmed?${q.toString()}`);
+}
 
 /** "45 min" / "1.5 hours" / "3 hours" — half-day sessions read badly in minutes. */
 function formatDuration(min: number): string {
@@ -133,21 +146,14 @@ export default function BookingFlow({
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>("");
-  const [reference, setReference] = useState<string>("");
-  const [manageToken, setManageToken] = useState<string>("");
-  /**
-   * Whether /api/bookings managed to send the confirmation email. Separate
-   * from the Stripe-resume `paidInfo.emailSent` because a no-deposit booking
-   * confirms in this same page load — there's no redirect to come back from.
-   */
-  const [directEmailSent, setDirectEmailSent] = useState(false);
 
-  // State for resuming after a Stripe Checkout redirect back to /book.
+  // State for resuming after a Stripe Checkout redirect back to /book. A
+  // "paid" result redirects straight to /book/confirmed (see poll() below),
+  // so there's no "paid" status here to render in place.
   const [resumeStatus, setResumeStatus] = useState<
-    "checking" | "paid" | "unpaid" | "timeout" | "error"
+    "checking" | "unpaid" | "timeout" | "error"
   >("checking");
   const [resumeMessage, setResumeMessage] = useState("");
-  const [paidInfo, setPaidInfo] = useState<PaidInfo | null>(null);
   const [cancelledNotice, setCancelledNotice] = useState(false);
 
   // On mount, check whether we've just been redirected back from Stripe
@@ -183,19 +189,20 @@ export default function BookingFlow({
         const json = await res.json();
 
         if (json.status === "paid") {
-          setPaidInfo({
-            reference: json.reference,
-            manageToken: json.manageToken,
-            sessionName: json.sessionName,
+          goToConfirmation({
+            type: "paid",
+            service: json.sessionName,
+            name: json.customerName,
             dateLabel: json.dateLabel,
             timeLabel: json.timeLabel,
             locationLabel: json.locationLabel,
-            depositAud: json.depositAud,
-            totalAud: json.totalAud,
-            customerName: json.customerName,
+            reference: json.reference,
+            manageToken: json.manageToken,
             emailSent: Boolean(json.emailSent),
+            // The deposit is what was actually charged today — the real
+            // conversion value, not the full session price.
+            value: json.depositAud,
           });
-          setResumeStatus("paid");
           return;
         }
         if (json.status === "unpaid") {
@@ -298,7 +305,6 @@ export default function BookingFlow({
       note: false,
     });
     setSubmitError("");
-    setReference("");
   }
 
   async function submitBooking() {
@@ -347,12 +353,21 @@ export default function BookingFlow({
         });
         const json = await res.json();
         if (res.ok && json.reference) {
-          setReference(json.reference);
-          setManageToken(json.manageToken ?? "");
-          setDirectEmailSent(Boolean(json.emailSent));
-          setSubmitting(false);
-          setTouched(false);
-          setStep("done");
+          goToConfirmation({
+            type: "booking",
+            service: service.name,
+            name: form.name,
+            dateLabel: formatLongDate(selectedDate),
+            timeLabel: selectedSlot.label,
+            locationLabel:
+              locationMode === "onlocation"
+                ? `On-location — ${postcode}`
+                : "Lane Cove Studio, Sydney",
+            reference: json.reference,
+            manageToken: json.manageToken ?? "",
+            emailSent: Boolean(json.emailSent),
+            value: service.price,
+          });
           return;
         }
         setSubmitError(
@@ -421,11 +436,11 @@ export default function BookingFlow({
       return;
     }
 
-    setReference("");
-    setManageToken("");
-    setSubmitting(false);
-    setTouched(false);
-    setStep("done");
+    goToConfirmation({
+      type: "enquiry",
+      service: service?.name ?? "Enquiry",
+      name: form.name,
+    });
   }
 
   /* --- render ----------------------------------------------------------- */
@@ -521,30 +536,10 @@ export default function BookingFlow({
           />
         )}
 
-        {step === "done" && service && (
-          <DoneStep
-            isEnquiry={service.mode === "enquiry"}
-            sessionName={service.name}
-            dateLabel={selectedDate ? formatLongDate(selectedDate) : null}
-            timeLabel={selectedSlot?.label ?? null}
-            locationLabel={
-              locationMode === "onlocation" && postcode
-                ? `On-location — ${postcode}`
-                : "Lane Cove Studio, Sydney"
-            }
-            reference={reference}
-            manageToken={manageToken}
-            name={form.name}
-            emailSent={directEmailSent}
-            onRestart={restart}
-          />
-        )}
-
         {step === "resuming" && (
           <ResumingStep
             status={resumeStatus}
             message={resumeMessage}
-            paidInfo={paidInfo}
             onRestart={restart}
           />
         )}
@@ -569,7 +564,6 @@ function StepRail({ step, mode }: { step: Step; mode: "instant" | "enquiry" }) {
     details: 2,
     enquiry: 1,
     resuming: labels.length - 1,
-    done: labels.length - 1,
   };
   const active = indexByStep[step];
 
@@ -1376,134 +1370,18 @@ function EnquiryStep({
 }
 
 /* ======================================================================== */
-/*  Confirmation                                                            */
-/* ======================================================================== */
-
-function DoneStep({
-  isEnquiry,
-  sessionName,
-  dateLabel,
-  timeLabel,
-  locationLabel,
-  reference,
-  manageToken,
-  name,
-  onRestart,
-  emailSent = false,
-}: {
-  isEnquiry: boolean;
-  sessionName: string;
-  dateLabel?: string | null;
-  timeLabel?: string | null;
-  locationLabel?: string | null;
-  reference: string;
-  manageToken: string;
-  name: string;
-  onRestart: () => void;
-  /** Paid bookings only — whether the confirmation email really went out. */
-  emailSent?: boolean;
-}) {
-  const firstName = name.trim().split(/\s+/)[0] || "there";
-
-  return (
-    <div className="py-4 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold text-2xl text-ink">
-        ✓
-      </div>
-      <h3 className="font-display mt-6 text-2xl text-cream sm:text-3xl">
-        {isEnquiry ? "Enquiry sent" : "Booking confirmed"}
-      </h3>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-        {isEnquiry ? (
-          <>
-            Thanks {firstName} — your project brief is with Nick. Expect a reply
-            with availability and a quote within one business day.
-          </>
-        ) : (
-          <>
-            Thanks {firstName} — your time is reserved.
-            {emailSent ? (
-              <>
-                {" "}
-                A confirmation email with your calendar invite and prep notes is
-                on its way.
-              </>
-            ) : (
-              <>
-                {" "}
-                Your booking details are below — take a copy, and Nick will be
-                in touch before the day with prep notes.
-              </>
-            )}
-          </>
-        )}
-      </p>
-
-      {!isEnquiry && dateLabel && timeLabel && (
-        <div className="mx-auto mt-7 max-w-sm border border-border bg-ink-2 p-6 text-left">
-          <div className="flex items-center justify-between">
-            <span className="eyebrow">Confirmed</span>
-            <span className="text-[0.72rem] tracking-wider text-gold">
-              {reference}
-            </span>
-          </div>
-          <h4 className="font-display mt-3 text-lg leading-snug text-cream">
-            {sessionName}
-          </h4>
-          <dl className="mt-4 space-y-2.5 text-sm">
-            <SummaryRow label="Date" value={dateLabel} />
-            <SummaryRow label="Time" value={timeLabel} />
-            {locationLabel && (
-              <SummaryRow label="Location" value={locationLabel} />
-            )}
-          </dl>
-        </div>
-      )}
-
-      {!isEnquiry && (
-        <p className="mt-5 text-sm text-muted">
-          Need to change something later?{" "}
-          <Link
-            href={`/manage/${manageToken || reference || "preview"}`}
-            className="text-gold underline-offset-4 transition-colors hover:text-gold-soft hover:underline"
-          >
-            Manage your booking
-          </Link>
-        </p>
-      )}
-
-      <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={onRestart}
-          className="border border-border-strong px-7 py-3.5 text-[0.78rem] uppercase tracking-[0.18em] text-cream transition-colors hover:border-gold hover:text-gold"
-        >
-          Book another session
-        </button>
-        <Link
-          href="/"
-          className="px-7 py-3.5 text-[0.78rem] uppercase tracking-[0.18em] text-gold transition-colors hover:text-gold-soft"
-        >
-          Back to home
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-/* ======================================================================== */
 /*  Resuming — shown after Stripe redirects back to /book?session_id=...   */
+/*  A "paid" result redirects straight to /book/confirmed (see poll() above) */
+/*  rather than rendering here — see BookingConfirmation.tsx.               */
 /* ======================================================================== */
 
 function ResumingStep({
   status,
   message,
-  paidInfo,
   onRestart,
 }: {
-  status: "checking" | "paid" | "unpaid" | "timeout" | "error";
+  status: "checking" | "unpaid" | "timeout" | "error";
   message: string;
-  paidInfo: PaidInfo | null;
   onRestart: () => void;
 }) {
   if (status === "checking") {
@@ -1512,23 +1390,6 @@ function ResumingStep({
         <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border-strong border-t-gold" />
         <p className="mt-5 text-sm text-muted">Confirming your payment…</p>
       </div>
-    );
-  }
-
-  if (status === "paid" && paidInfo) {
-    return (
-      <DoneStep
-        isEnquiry={false}
-        sessionName={paidInfo.sessionName}
-        dateLabel={paidInfo.dateLabel}
-        timeLabel={paidInfo.timeLabel}
-        locationLabel={paidInfo.locationLabel}
-        reference={paidInfo.reference}
-        manageToken={paidInfo.manageToken}
-        name={paidInfo.customerName}
-        emailSent={paidInfo.emailSent}
-        onRestart={onRestart}
-      />
     );
   }
 

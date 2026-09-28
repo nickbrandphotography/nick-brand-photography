@@ -67,25 +67,26 @@ export default function BookingConfirmation({
             Thanks {firstName} — your project brief is with Nick. Expect a reply
             with availability and a quote within one business day.
           </>
+        ) : emailSent ? (
+          <>
+            Thanks {firstName} — your time is reserved. A confirmation email
+            with your calendar invite and prep notes is on its way.
+          </>
         ) : (
           <>
-            Thanks {firstName} — your time is reserved.
-            {emailSent ? (
-              <>
-                {" "}
-                A confirmation email with your calendar invite and prep notes is
-                on its way.
-              </>
-            ) : (
-              <>
-                {" "}
-                Your booking details are below — take a copy, and Nick will be
-                in touch before the day with prep notes.
-              </>
-            )}
+            Your booking is confirmed, and your session details are below.
+            Please keep a copy for your records. I&rsquo;ll be in touch before
+            the day with everything you need to know, including some helpful
+            preparation notes.
           </>
         )}
       </p>
+
+      {!isEnquiry && !emailSent && (
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+          I look forward to working with you.
+        </p>
+      )}
 
       {!isEnquiry && dateLabel && timeLabel && (
         <div className="mx-auto mt-7 max-w-sm border border-border bg-ink-2 p-6 text-left">

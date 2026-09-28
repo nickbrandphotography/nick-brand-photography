@@ -93,9 +93,9 @@ function confirmationHtml(b: BookingEmailInput): string {
     </h1>
 
     <p style="font-size:15px;line-height:1.6;color:#3a3a3a;margin:0 0 24px;">
-      Thanks ${firstName} — the time below is held for you${
-        b.depositAud > 0 ? " and your deposit is received" : ""
-      }. The calendar invite is attached to this email.
+      Thanks ${firstName} — your time is reserved. Your booking details are
+      below — take a copy, and Nick will be in touch before the day with
+      prep notes.
     </p>
 
     <div style="background:#fff;border:1px solid #e4e0da;padding:20px 24px;margin:0 0 24px;">
